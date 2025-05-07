@@ -3,39 +3,45 @@
   <div class="video-list">
     <!-- 筛选区域 -->
     <el-card class="filter-section">
-      <el-form :model="filterForm" inline>
-        <el-form-item label="关键词">
-          <el-input v-model="filterForm.keyword" placeholder="请输入关键词"></el-input>
-        </el-form-item>
-        <el-form-item label="视频来源">
-          <el-select
-            v-model="filterForm.source"
-            placeholder="请选择视频来源"
-            style="width: 180px"
-            clearable
+      <div class="filter-header">
+        <div class="source-label">热门标签：</div>
+        <el-button type="text" @click="resetFilter">清空筛选</el-button>
+      </div>
+      
+      <!-- 标签云 -->
+      <div class="tag-cloud">
+        <el-tag
+          v-for="tag in tagOptions"
+          :key="tag.value"
+          :type="selectedTag === tag.value ? 'primary' : 'info'"
+          class="tag-item"
+          @click="selectTag(tag.value)"
+          :effect="selectedTag === tag.value ? 'dark' : 'plain'"
+        >
+          {{ tag.label }}
+        </el-tag>
+      </div>
+      
+      <!-- 视频来源 -->
+      <div class="source-filter">
+        <div class="source-label">视频来源：</div>
+        <div class="source-items">
+          <div 
+            v-for="source in sourceOptions" 
+            :key="source.value"
+            class="source-item"
+            :class="{ 'active': filterForm.source === source.value }"
+            @click="selectSource(source.value)"
           >
-            <el-option
-              v-for="item in sourceOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-              <div style="display: flex; align-items: center;">
-                <img
-                  v-if="item.icon"
-                  :src="item.icon"
-                  style="width: 16px; height: 16px; margin-right: 8px"
-                />
-                <span>{{ item.label }}</span>
-              </div>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleFilter">筛选</el-button>
-          <el-button @click="resetFilter">重置</el-button>
-        </el-form-item>
-      </el-form>
+            <img 
+              v-if="source.icon && source.value" 
+              :src="source.icon" 
+              class="source-icon"
+            />
+            <span>{{ source.label }}</span>
+          </div>
+        </div>
+      </div>
     </el-card>
 
     <!-- 视频列表 -->
@@ -70,11 +76,33 @@
 import { ref, reactive } from 'vue'
 import VideoCard from '@/components/VideoCard.vue'
 
+// 选中的标签
+const selectedTag = ref('')
+
 // 筛选表单
 const filterForm = reactive({
-  keyword: '',
   source: ''
 })
+
+// 标签选项
+const tagOptions = [
+  { label: '全部', value: '' },
+  { label: '热门', value: 'hot' },
+  { label: '搞笑', value: 'funny' },
+  { label: '美食', value: 'food' },
+  { label: '旅游', value: 'travel' },
+  { label: '时尚', value: 'fashion' },
+  { label: '美妆', value: 'beauty' },
+  { label: '知识', value: 'knowledge' },
+  { label: '音乐', value: 'music' },
+  { label: '舞蹈', value: 'dance' },
+  { label: '宠物', value: 'pet' },
+  { label: '游戏', value: 'game' },
+  { label: '体育', value: 'sports' },
+  { label: '育儿', value: 'parenting' },
+  { label: '科技', value: 'tech' },
+  { label: '健身', value: 'fitness' }
+]
 
 // 分页数据
 const currentPage = ref(1)
@@ -86,7 +114,7 @@ const videoList = ref([
   {
     id: 1,
     title: '示例视频标题',
-    videoUrl: 'https://example.com/video.mp4',
+    videoUrl: 'http://ai.gzgoodidea.com/api/videos/file/original/c70885ea-23b9-48ea-8d65-2022d7f3f1cd.mp4',
     likes: 1000,
     comments: 100,
     shares: 50,
@@ -94,8 +122,8 @@ const videoList = ref([
     tags: ['热门', '搞笑'],
     keywords: ['关键词1', '关键词2'],
     source: '抖音',
-    originalScript: '这是原始话术内容...',
-    modifiedScript: '这是AI改写后的话术内容...，这是AI改写后的话术内容...，这是AI改写后的话术内容...',
+    originalScript: '我們重新演藝了中國的國水，讓他打造了一個經驗的結果。讓現在的年輕人，換一個角度，重新審視中國的川中文化，(WOW)。',
+    modifiedScript: '我們重新演藝了中國的國水，讓他打造了一個經驗的結果。讓現在的年輕人，換一個角度，重新審視中國的川中文化，(WOW)。',
     publishTime: '2024-03-20 12:00:00'
   },
   // 添加更多测试数据
@@ -205,16 +233,38 @@ const sourceOptions = [
   }
 ]
 
-// 处理筛选
-const handleFilter = () => {
-  // TODO: 实现筛选逻辑
-  console.log('筛选条件：', filterForm)
+// 选择标签（单选）
+const selectTag = (tagValue) => {
+  // 如果点击已选中的标签，则取消选择
+  if (selectedTag.value === tagValue) {
+    selectedTag.value = ''
+  } else {
+    selectedTag.value = tagValue
+  }
+  applyFilters()
+}
+
+// 选择来源
+const selectSource = (sourceValue) => {
+  filterForm.source = sourceValue
+  applyFilters()
+}
+
+// 应用筛选
+const applyFilters = () => {
+  console.log('应用筛选：', {
+    tag: selectedTag.value,
+    source: filterForm.source
+  })
+  
+  // TODO: 根据筛选条件获取数据
 }
 
 // 重置筛选
 const resetFilter = () => {
-  filterForm.keyword = ''
+  selectedTag.value = ''
   filterForm.source = ''
+  applyFilters()
 }
 
 // 处理分页
@@ -251,6 +301,79 @@ const handleDelete = (video) => {
 .filter-section {
   margin-bottom: 20px;
   width: 100%;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tag-item {
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.tag-item:hover {
+  transform: translateY(-2px);
+}
+
+.source-filter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.source-label {
+  white-space: nowrap;
+  font-size: 14px;
+  color: #606266;
+  margin-right: 10px;
+}
+
+.source-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.source-item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #606266;
+  transition: all 0.2s;
+}
+
+.source-item:hover {
+  color: #409EFF;
+  background-color: #f0f7ff;
+}
+
+.source-item.active {
+  color: #409EFF;
+  background-color: #ecf5ff;
+}
+
+.source-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
 }
 
 .video-grid-container {
@@ -304,15 +427,5 @@ const handleDelete = (video) => {
   .video-list {
     padding: 0 10px;
   }
-}
-
-:deep(.el-select-dropdown__item) {
-  padding: 0 12px;
-  height: 40px;
-  line-height: 40px;
-}
-
-:deep(.el-form-item) {
-  margin-bottom: 18px;
 }
 </style>    
