@@ -66,9 +66,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-
+import { getPrompt, savePrompt, getKnowledge, saveKnowledge } from '@/api/aiConfig'
 // 当前激活的配置类型
 const activeConfig = ref('prompt')
 
@@ -82,14 +82,27 @@ const knowledgeForm = reactive({
   content: ''
 })
 
+// 获取提示词
+const getPromptData = async () => {
+  const res = await getPrompt()
+  
+  promptForm.prompt = res
+}
+
+// 获取知识库
+const getKnowledgeData = async () => {
+  const res = await getKnowledge()
+  knowledgeForm.content = res
+}
+
+
 // 提示词相关方法
-const handleSavePrompt = () => {
+const handleSavePrompt = async () => {
   if (!promptForm.prompt.trim()) {
     ElMessage.warning('请输入提示词内容')
     return
   }
-  // TODO: 实现提示词保存逻辑
-  console.log('保存提示词配置：', promptForm)
+  await savePrompt(promptForm)
   ElMessage.success('提示词配置保存成功')
 }
 
@@ -97,20 +110,27 @@ const handleResetPrompt = () => {
   promptForm.prompt = ''
 }
 
+
 // 知识库相关方法
-const handleSaveKnowledge = () => {
+const handleSaveKnowledge = async () => {
   if (!knowledgeForm.content.trim()) {
     ElMessage.warning('请输入知识库内容')
     return
   }
-  // TODO: 实现知识库保存逻辑
-  console.log('保存知识库配置：', knowledgeForm)
+  await saveKnowledge(knowledgeForm)
   ElMessage.success('知识库配置保存成功')
+
 }
 
 const handleResetKnowledge = () => {
   knowledgeForm.content = ''
 }
+
+// 初始化
+onMounted(() => {
+  getPromptData()
+  getKnowledgeData()
+})
 </script>
 
 <style scoped>

@@ -34,9 +34,10 @@
             @click="selectSource(source.value)"
           >
             <img 
-              v-if="source.icon && source.value" 
-              :src="source.icon" 
+              v-if="source.png_src && source.value" 
+              :src="source.png_src" 
               class="source-icon"
+              style="width: 16px; height: 16px;"
             />
             <span>{{ source.label }}</span>
           </div>
@@ -45,8 +46,8 @@
     </el-card>
 
     <!-- 视频列表 -->
-    <div class="video-grid-container">
-      <div class="masonry-grid">
+    <div v-loading="loading" class="video-grid-container">
+      <div v-if="videoList.length > 0" class="masonry-grid">
         <VideoCard
           v-for="video in videoList"
           :key="video.id"
@@ -57,10 +58,11 @@
           class="masonry-item"
         />
       </div>
+      <el-empty v-else description="暂无数据" />
     </div>
 
     <!-- 分页 -->
-    <div class="pagination">
+    <div class="pagination" v-if="total > 0">
       <el-pagination
         :current-page="currentPage"
         :page-size="pageSize"
@@ -73,8 +75,13 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import VideoCard from '@/components/VideoCard.vue'
+import { getVideoList, getVideosByTag, getVideosBySource, auditVideoStatus, deleteVideo } from '@/api/video'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { getKeywordList } from '@/api/keyword'
+// 加载状态
+const loading = ref(false)
 
 // 选中的标签
 const selectedTag = ref('')
@@ -85,125 +92,15 @@ const filterForm = reactive({
 })
 
 // 标签选项
-const tagOptions = [
-  { label: '全部', value: '' },
-  { label: '热门', value: 'hot' },
-  { label: '搞笑', value: 'funny' },
-  { label: '美食', value: 'food' },
-  { label: '旅游', value: 'travel' },
-  { label: '时尚', value: 'fashion' },
-  { label: '美妆', value: 'beauty' },
-  { label: '知识', value: 'knowledge' },
-  { label: '音乐', value: 'music' },
-  { label: '舞蹈', value: 'dance' },
-  { label: '宠物', value: 'pet' },
-  { label: '游戏', value: 'game' },
-  { label: '体育', value: 'sports' },
-  { label: '育儿', value: 'parenting' },
-  { label: '科技', value: 'tech' },
-  { label: '健身', value: 'fitness' }
-]
+const tagOptions = ref([])
 
 // 分页数据
 const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(100)
+const pageSize = ref(9)
+const total = ref(0)
 
 // 视频列表数据
-const videoList = ref([
-  {
-    id: 1,
-    title: '示例视频标题',
-    videoUrl: 'http://ai.gzgoodidea.com/api/videos/file/original/c70885ea-23b9-48ea-8d65-2022d7f3f1cd.mp4',
-    likes: 1000,
-    comments: 100,
-    shares: 50,
-    favorites: 200,
-    tags: ['热门', '搞笑'],
-    keywords: ['关键词1', '关键词2'],
-    source: '抖音',
-    originalScript: '我們重新演藝了中國的國水，讓他打造了一個經驗的結果。讓現在的年輕人，換一個角度，重新審視中國的川中文化，(WOW)。',
-    modifiedScript: '我們重新演藝了中國的國水，讓他打造了一個經驗的結果。讓現在的年輕人，換一個角度，重新審視中國的川中文化，(WOW)。',
-    publishTime: '2024-03-20 12:00:00'
-  },
-  // 添加更多测试数据
-  {
-    id: 2,
-    title: '示例视频标题2',
-    videoUrl: 'https://example.com/video2.mp4',
-    likes: 2000,
-    comments: 200,
-    shares: 100,
-    favorites: 300,
-    tags: ['热门', '生活'],
-    keywords: ['关键词3', '关键词4'],
-    source: '快手',
-    originalScript: '这是原始话术内容2...',
-    modifiedScript: '这是AI改写后的话术内容2...',
-    publishTime: '2024-03-21 12:00:00'
-  },
-  // 添加更多测试数据用于展示布局效果
-  {
-    id: 3,
-    title: '示例视频标题3',
-    videoUrl: 'https://example.com/video3.mp4',
-    likes: 3000,
-    comments: 300,
-    shares: 150,
-    favorites: 400,
-    tags: ['热门', '美食'],
-    keywords: ['关键词5', '关键词6'],
-    source: '小红书',
-    originalScript: '这是原始话术内容3...',
-    modifiedScript: '这是AI改写后的话术内容3...',
-    publishTime: '2024-03-22 12:00:00'
-  },
-  {
-    id: 4,
-    title: '示例视频标题4',
-    videoUrl: 'https://example.com/video4.mp4',
-    likes: 4000,
-    comments: 400,
-    shares: 200,
-    favorites: 500,
-    tags: ['热门', '旅游'],
-    keywords: ['关键词7', '关键词8'],
-    source: '抖音',
-    originalScript: '这是原始话术内容4...',
-    modifiedScript: '这是AI改写后的话术内容4...',
-    publishTime: '2024-03-23 12:00:00'
-  },
-  {
-    id: 5,
-    title: '示例视频标题5',
-    videoUrl: 'https://example.com/video5.mp4',
-    likes: 5000,
-    comments: 500,
-    shares: 250,
-    favorites: 600,
-    tags: ['热门', '时尚'],
-    keywords: ['关键词9', '关键词10'],
-    source: '快手',
-    originalScript: '这是原始话术内容5...',
-    modifiedScript: '这是AI改写后的话术内容5...',
-    publishTime: '2024-03-24 12:00:00'
-  },
-  {
-    id: 6,
-    title: '示例视频标题6',
-    videoUrl: 'https://example.com/video5.mp4',
-    likes: 5000,
-    comments: 500,
-    shares: 250,
-    favorites: 600,
-    tags: ['热门', '时尚'],
-    keywords: ['关键词9', '关键词10'],
-    source: '快手',
-    originalScript: '这是原始话术内容5...',
-    modifiedScript: '这是AI改写后的话术内容5...',
-    publishTime: '2024-03-24 12:00:00'
-  }
-])
+const videoList = ref([])
 
 // 视频来源选项
 const sourceOptions = [
@@ -213,25 +110,102 @@ const sourceOptions = [
   },
   {
     label: '抖音',
-    value: 'douyin',
-    icon: 'https://lf1-cdn-tos.bytegoofy.com/goofy/ies/douyin_web/public/favicon.ico'
+    value: '抖音',
+    png_src: '/douyin.png'
+  },
+  {
+    label: '视频号',
+    value: '视频号',
+    png_src: '/shipinhao.png'
   },
   {
     label: '快手',
-    value: 'kuaishou',
-    icon: 'https://static.yximgs.com/udata/pkg/fe/widgets_header_logo.4e8554cd.png'
+    value: '快手',
+    png_src: '/kuaishou.png'
   },
   {
     label: '小红书',
-    value: 'xiaohongshu',
-    icon: 'https://ci.xiaohongshu.com/favicon.ico'
+    value: '小红书',
+    png_src: '/xiaohongshu.png'
   },
   {
     label: 'B站',
-    value: 'bilibili',
-    icon: 'https://www.bilibili.com/favicon.ico'
+    value: 'B站',
+    png_src: '/bilibili.png'
   }
 ]
+
+function formatTopicForHTML(topic) {
+  if (!topic) return [];
+  // 按#分割字符串成数组,过滤掉空字符串
+  return topic.split('#').filter(item => item).map(item => '#'+item);
+}
+
+// 初始化数据
+const fetchVideoList = async () => {
+  loading.value = true
+  try {
+    const params = {
+      pageNum: currentPage.value,
+      pageSize: pageSize.value,
+      keywords: selectedTag.value,
+      hotSource: filterForm.source
+    }
+    
+    console.log('请求参数:', params)
+    
+    // 直接使用 getVideoList 方法，不再区分不同接口
+    const response = await getVideoList(params)
+    // console.log('接口返回数据:', response)
+    
+    // 根据实际接口返回格式进行适配
+    if (response && response.records) {
+      videoList.value = response.records || []
+      total.value = response.total || 0
+      videoList.value = response.records.map(video => ({
+        ...video,
+        formattedTopic: formatTopicForHTML(video.topic), // 格式化后的 topic
+      }));
+      console.log(videoList.value)
+    } else {
+      // 兼容其它数据格式
+      videoList.value = Array.isArray(response) ? response : (response?.items || [])
+      total.value = response?.total || (Array.isArray(response) ? response.length : 0)
+    }
+
+    // 处理空数据情况
+    if (videoList.value.length === 0 && currentPage.value > 1) {
+      currentPage.value = 1  // 如果当前页没有数据，回到第一页
+      fetchVideoList()
+    }
+  } catch (error) {
+    console.error('获取视频列表失败', error)
+    ElMessage.error('获取视频列表失败')
+    videoList.value = []
+    total.value = 0
+  } finally {
+    loading.value = false
+  }
+}
+
+// 获取标签选项
+const fetchTagOptions = async () => {
+  const response = await getKeywordList()
+  tagOptions.value = response.map(tag => ({
+    label: tag.content,
+    value: tag.content
+  }))
+  tagOptions.value.unshift({
+    label: '全部',
+    value: ''
+  })
+}
+
+// 组件挂载时获取数据
+onMounted(() => {
+  fetchVideoList()
+  fetchTagOptions()
+})
 
 // 选择标签（单选）
 const selectTag = (tagValue) => {
@@ -241,49 +215,81 @@ const selectTag = (tagValue) => {
   } else {
     selectedTag.value = tagValue
   }
-  applyFilters()
+  currentPage.value = 1
+  fetchVideoList()
 }
 
 // 选择来源
 const selectSource = (sourceValue) => {
   filterForm.source = sourceValue
-  applyFilters()
-}
-
-// 应用筛选
-const applyFilters = () => {
-  console.log('应用筛选：', {
-    tag: selectedTag.value,
-    source: filterForm.source
-  })
-  
-  // TODO: 根据筛选条件获取数据
+  currentPage.value = 1
+  fetchVideoList()
 }
 
 // 重置筛选
 const resetFilter = () => {
   selectedTag.value = ''
   filterForm.source = ''
-  applyFilters()
+  currentPage.value = 1
+  fetchVideoList()
 }
 
 // 处理分页
 const handlePageChange = (page) => {
   currentPage.value = page
-  // TODO: 加载对应页码的数据
+  fetchVideoList()
 }
 
-// 视频操作
+// 通过视频
 const handleApprove = (video) => {
-  console.log('通过视频：', video)
+  ElMessageBox.confirm('确认通过该视频吗？', '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'info'
+  }).then(async () => {
+    try {
+      await auditVideoStatus(video.id, { status: 1 })
+      ElMessage.success('操作成功')
+      fetchVideoList() // 刷新数据
+    } catch (error) {
+      ElMessage.error('操作失败')
+    }
+  }).catch(() => {})
 }
 
+// 拒绝视频
 const handleReject = (video) => {
-  console.log('拒绝视频：', video)
+  ElMessageBox.prompt('请输入拒绝原因', '拒绝视频', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    inputPattern: /\S+/,
+    inputErrorMessage: '请输入拒绝原因'
+  }).then(async ({ value }) => {
+    try {
+      await auditVideoStatus(video.id, { status: 2 })
+      ElMessage.success('操作成功')
+      fetchVideoList() // 刷新数据
+    } catch (error) {
+      ElMessage.error('操作失败')
+    }
+  }).catch(() => {})
 }
 
+// 删除视频
 const handleDelete = (video) => {
-  console.log('删除视频：', video)
+  ElMessageBox.confirm('确认删除该视频吗？此操作不可恢复。', '警告', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async () => {
+    try {
+      await deleteVideo(video.id)
+      ElMessage.success('删除成功')
+      fetchVideoList() // 刷新数据
+    } catch (error) {
+      ElMessage.error('删除失败')
+    }
+  }).catch(() => {})
 }
 </script>
 
@@ -379,6 +385,7 @@ const handleDelete = (video) => {
 .video-grid-container {
   width: 100%;
   overflow-x: hidden;
+  min-height: 400px;
 }
 
 .masonry-grid {
