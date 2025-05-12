@@ -18,10 +18,21 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8082', // 目标服务器
         changeOrigin: true, // 改变源
-        // secure: false, // 接受无效证书
-        // ws: true, // 代理 websockets
+        secure: false, // 接受无效证书
+        ws: true, // 代理 websockets
         rewrite: (path) => path.replace(/^\/api/, ''), // 将 /api 重写为空
-      }
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('代理错误:', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('发送代理请求:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('收到代理响应:', proxyRes.statusCode, req.url);
+          });
+        }
+      },
     }
   },
   build: {

@@ -6,7 +6,7 @@
         <img src="@/assets/img/add.svg" style="width: 16px; height: 16px; margin-right: 5px;" />新增关键词
       </el-button>
       
-      <div class="search-box">
+      <!-- <div class="search-box">
         <el-input
           v-model="searchKeyword"
           placeholder="搜索关键词"
@@ -17,7 +17,7 @@
             <el-button @click="handleSearch">搜索</el-button>
           </template>
         </el-input>
-      </div>
+      </div> -->
     </div>
     
     <!-- 关键词表格 -->
@@ -126,7 +126,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 // import { Plus } from '@element-plus/icons-vue'
 import { getKeywordList, addKeyword, deleteKeyword } from '@/api/keyword'
 

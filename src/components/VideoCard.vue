@@ -2,25 +2,53 @@
 <template>
   <el-card class="video-card" :body-style="{ padding: '0' }">
     <div class="video-player">
-      <video v-if="!video.originalVideo" controls></video>
-      <video v-else :src="`/api/videos/file/${video.originalVideo}`" controls
-             preload="metadata" crossorigin="anonymous">
-        <!-- 根据文件扩展名添加不同类型的source标签 -->
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/mp4"
-                v-if="getFileExtension(video.originalVideo) === 'mp4'">
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/x-msvideo"
-                v-if="getFileExtension(video.originalVideo) === 'avi'">
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/quicktime"
-                v-if="getFileExtension(video.originalVideo) === 'mov'">
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/webm"
-                v-if="getFileExtension(video.originalVideo) === 'webm'">
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/x-ms-wmv"
-                v-if="getFileExtension(video.originalVideo) === 'wmv'">
-        <source :src="`/api/videos/file/${video.originalVideo}`" type="video/x-flv"
-                v-if="getFileExtension(video.originalVideo) === 'flv'">
-        您的浏览器不支持视频播放
-      </video>
+      <template v-if="!video.originalVideo">
+        <div class="video-placeholder">
+          <div class="placeholder-text">暂无视频</div>
+        </div>
+      </template>
+      <template v-else>
+        <video 
+          ref="videoRef"
+          controls
+          preload="metadata" 
+          crossorigin="anonymous"
+          @error="handleVideoError"
+          @loadeddata="handleVideoLoaded"
+          @stalled="handleVideoStalled"
+          @waiting="handleVideoWaiting"
+          @canplay="videoLoaded = true"
+          v-show="videoLoaded && !videoError"
+        >
+          <!-- 动态生成source标签 -->
+          <source :src="videoUrl" :type="getVideoMimeType">
+          您的浏览器不支持视频播放
+        </video>
+        <!-- 加载中状态 -->
+        <div v-if="!videoLoaded && !videoError" class="video-loading">
+          <el-icon class="loading-icon"><Loading /></el-icon>
+          <span>视频加载中... {{ loadingStatus }}</span>
+        </div>
+        <!-- 加载错误状态 -->
+        <div v-if="videoError" class="video-error">
+          <el-icon class="error-icon" v-if="isOffline">
+            <svg t="1747032166788" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10727" width="24" height="24"><path d="M953.437043 74.621715l-4.031877-4.031877a242.744566 242.744566 0 0 0-342.325516 0L388.974329 288.759157a242.744566 242.744566 0 0 0 0 342.261518l4.031877 4.031877c7.807761 7.871759 16.127506 14.911543 24.767241 21.439343l79.805556-79.805556a130.683998 130.683998 0 0 1-26.1112-20.095385l-4.031876-4.031876a131.195982 131.195982 0 0 1 0-185.402322L685.477249 149.115433a131.195982 131.195982 0 0 1 185.402322 0l4.031877 4.031877a131.25998 131.25998 0 0 1 0 185.402322L776.290468 437.106614a338.549632 338.549632 0 0 1 24.511249 132.347946l152.635326-152.571327a242.744566 242.744566 0 0 0 0-342.325516zM631.078915 388.916089a240.056648 240.056648 0 0 0-24.703243-21.439343L526.506118 447.3463c9.279716 5.503831 18.111445 12.159628 26.1112 20.095385l4.031876 4.031876a131.195982 131.195982 0 0 1 0 185.402322L338.607872 874.853208a131.195982 131.195982 0 0 1-185.402322 0l-4.031877-4.031877a131.25998 131.25998 0 0 1 0-185.402322L247.794653 586.862027a338.549632 338.549632 0 0 1-24.511249-132.347946L70.648078 607.02141a242.744566 242.744566 0 0 0 0 342.325516l4.031877 4.031877a242.808564 242.808564 0 0 0 342.325516 0l218.105321-218.105321a242.744566 242.744566 0 0 0 0-342.325516l-4.031877-4.031877z" fill="#e6e6e6" p-id="10728"></path></svg>
+          </el-icon>
+          <el-icon class="error-icon" v-else>
+            <svg t="1747032341381" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12951" width="24" height="24"><path d="M239.056896 261.30432 120.561664 261.30432c-27.394048 0-49.60256 22.208512-49.60256 49.60256L70.959104 738.03776c0 27.396096 22.208512 49.60256 49.60256 49.60256l118.495232 0L239.056896 261.30432z" fill="#e6e6e6" p-id="12952"></path><path d="M249.296896 261.30432l0 526.336L751.616 787.64032l0-526.336L249.296896 261.30432zM425.263104 643.508224l0.210944-238.073856 150.962176 119.216128L425.263104 643.508224z" fill="#e6e6e6" p-id="12953"></path><path d="M761.856 261.30432l118.493184 0c27.396096 0 49.604608 22.208512 49.604608 49.60256L929.953792 738.03776c0 27.396096-22.208512 49.60256-49.604608 49.60256L761.856 787.64032 761.856 261.30432z" fill="#e6e6e6" p-id="12954"></path></svg>
+          </el-icon>
+          <div class="error-text">
+            <p>视频加载失败: {{ errorMessage }}</p>
+            <div class="error-actions">
+              <el-button type="primary" size="small" @click="retryVideo">
+                <svg style="margin-right: 5px;" t="1747030901194" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="9680" width="16" height="16"><path d="M955.072 120.768a18.752 18.752 0 0 0-26.496-1.152l-87.424 77.248C696.704 52.928 472.32 22.464 293.76 122.496 115.328 222.528 27.072 428.288 78.528 624.256c51.456 196.096 229.888 333.696 435.2 335.744 205.248 2.048 386.432-132.032 441.856-327.04 1.536-5.056 1.28-10.56 1.28-16.064a57.92 57.92 0 0 0-16.384-62.08 59.904 59.904 0 0 0-64.128-9.92 58.432 58.432 0 0 0-34.944 54.08c-39.04 142.336-169.664 241.344-319.168 241.92-149.504 0.512-280.96-97.6-321.024-239.616a325.44 325.44 0 0 1 149.312-368.704 335.488 335.488 0 0 1 400 44.416l-89.92 79.36a18.176 18.176 0 0 0-5.44 19.968 18.56 18.56 0 0 0 16.832 12.352l267.52 29.888a18.88 18.88 0 0 0 20.032-17.664l0.192-266.56a18.432 18.432 0 0 0-4.608-13.632v0.064z" p-id="9681" fill="#e6e6e6"></path></svg>
+                 重试
+              </el-button>
 
+            </div>
+          </div>
+        </div>
+      </template>
     </div>
 
     <div class="video-content">
@@ -150,7 +178,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+// import { Loading, VideoPlay, Connection, RefreshRight } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 定义props
 const props = defineProps({
@@ -159,6 +189,156 @@ const props = defineProps({
     required: true
   }
 })
+
+// 视频相关状态
+const videoRef = ref(null)
+const videoLoaded = ref(false)
+const videoError = ref(false)
+const loadAttempts = ref(0)
+const errorMessage = ref('未知错误')
+const loadingStatus = ref('')
+const loadingTimer = ref(null)
+const loadingTimeout = ref(null)
+
+// 网络状态检测
+const isOffline = ref(false)
+const networkQuality = ref('unknown')
+
+// 视频URL和MIME类型处理
+const videoUrl = computed(() => {
+  if (!props.video.originalVideo) return ''
+  // 添加时间戳参数，防止缓存问题
+  const timestamp = new Date().getTime()
+  return `/api/api/videos/file/${props.video.originalVideo}`
+})
+
+// 获取视频MIME类型
+const getVideoMimeType = computed(() => {
+  if (!props.video.originalVideo) return ''
+  const ext = getFileExtension(props.video.originalVideo)
+  switch (ext.toLowerCase()) {
+    case 'mp4': return 'video/mp4'
+    case 'webm': return 'video/webm'
+    case 'ogv': return 'video/ogg'
+    case 'avi': return 'video/x-msvideo'
+    case 'mov': return 'video/quicktime'
+    case 'wmv': return 'video/x-ms-wmv'
+    case 'flv': return 'video/x-flv'
+    case 'mkv': return 'video/x-matroska'
+    case 'ts': return 'video/mp2t'
+    case '3gp': return 'video/3gpp'
+    case 'm3u8': return 'application/x-mpegURL'
+    default: return 'video/mp4' // 默认MP4类型
+  }
+})
+
+// 检查视频是否可以播放
+const canPlayVideo = computed(() => {
+  if (!videoRef.value || !props.video.originalVideo) return false
+  const ext = getFileExtension(props.video.originalVideo).toLowerCase()
+  
+  // 检查浏览器是否支持该格式
+  if (ext === 'mp4' && !videoRef.value.canPlayType('video/mp4')) return false
+  if (ext === 'webm' && !videoRef.value.canPlayType('video/webm')) return false
+  if (ext === 'ogv' && !videoRef.value.canPlayType('video/ogg')) return false
+  
+  return true
+})
+
+// 视频错误处理
+const handleVideoError = (e) => {
+  console.error('视频加载错误:', e)
+  videoError.value = true
+  videoLoaded.value = false
+  
+  // 记录详细错误信息
+  if (e.target && e.target.error) {
+    console.error('错误代码:', e.target.error.code)
+    console.error('错误消息:', e.target.error.message)
+    
+    // 设置用户友好的错误信息
+    switch(e.target.error.code) {
+      case 1:
+        errorMessage.value = '加载被终止'
+        break
+      case 2:
+        errorMessage.value = '网络错误'
+        break
+      case 3:
+        errorMessage.value = '解码错误'
+        break
+      case 4:
+        errorMessage.value = '视频格式不支持'
+        break
+      default:
+        errorMessage.value = '未知错误'
+    }
+  } else {
+    errorMessage.value = '加载失败'
+  }
+}
+
+// 视频加载成功处理
+const handleVideoLoaded = () => {
+  videoLoaded.value = true
+  videoError.value = false
+  clearTimeout(loadingTimeout.value)
+  console.log('视频加载成功')
+}
+
+// 视频加载停滞处理
+const handleVideoStalled = () => {
+  console.warn('视频加载停滞')
+  loadingStatus.value = '加载停滞...'
+  
+  // 如果停滞超过10秒，尝试自动重试
+  clearTimeout(loadingTimer.value)
+  loadingTimer.value = setTimeout(() => {
+    if (!videoLoaded.value && !videoError.value) {
+      console.warn('加载停滞超时，自动重试')
+      retryVideo()
+    }
+  }, 10000)
+}
+
+// 视频等待处理
+const handleVideoWaiting = () => {
+  console.log('视频加载等待中...')
+  loadingStatus.value = '缓冲中...'
+}
+
+// 重试加载视频
+const retryVideo = () => {
+  if (loadAttempts.value >= 3) {
+    ElMessage.warning('视频加载失败次数过多，请稍后再试')
+    return
+  }
+  
+  videoError.value = false
+  videoLoaded.value = false
+  loadAttempts.value++
+  loadingStatus.value = `重试第${loadAttempts.value}次...`
+  
+  // 清除所有计时器
+  clearTimeout(loadingTimer.value)
+  clearTimeout(loadingTimeout.value)
+  
+  // 给浏览器一些时间重新加载
+  setTimeout(() => {
+    if (videoRef.value) {
+      videoRef.value.load()
+      
+      // 设置新的加载超时
+      loadingTimeout.value = setTimeout(() => {
+        if (!videoLoaded.value && !videoError.value) {
+          console.warn('视频加载超时')
+          videoError.value = true
+          errorMessage.value = '加载超时'
+        }
+      }, 20000) // 20秒超时
+    }
+  }, 500)
+}
 
 // 话术对比弹窗
 const compareDialogVisible = ref(false)
@@ -181,6 +361,119 @@ const emit = defineEmits(['approve', 'reject', 'delete'])
 const handleApprove = () => emit('approve', props.video)
 const handleReject = () => emit('reject', props.video)
 const handleDelete = () => emit('delete', props.video)
+
+// 检测网络变化
+const handleNetworkChange = () => {
+  isOffline.value = !navigator.onLine
+  if (isOffline.value) {
+    console.warn('网络已断开')
+    if (videoRef.value && !videoLoaded.value) {
+      videoError.value = true
+      errorMessage.value = '网络已断开'
+    }
+  } else {
+    console.log('网络已连接')
+    // 如果重新连接且视频之前加载失败，尝试重新加载
+    if (videoError.value && errorMessage.value === '网络已断开') {
+      retryVideo()
+    }
+  }
+}
+
+// 检测网络质量
+const checkNetworkQuality = async () => {
+  try {
+    const startTime = Date.now()
+    const response = await fetch('/api/ping', { method: 'HEAD' })
+    const endTime = Date.now()
+    
+    if (response.ok) {
+      const latency = endTime - startTime
+      
+      if (latency < 300) {
+        networkQuality.value = 'good'
+      } else if (latency < 1000) {
+        networkQuality.value = 'average'
+      } else {
+        networkQuality.value = 'poor'
+        console.warn(`网络延迟高: ${latency}ms`)
+      }
+    }
+  } catch (error) {
+    console.error('网络质量检测失败:', error)
+    networkQuality.value = 'poor'
+  }
+}
+
+// 智能重试
+const smartRetry = () => {
+  // 等待3秒检测网络，然后决定如何处理
+  loadingStatus.value = '正在检测网络...'
+  
+  setTimeout(async () => {
+    await checkNetworkQuality()
+    
+    if (isOffline.value) {
+      ElMessageBox.alert('网络已断开，请检查网络连接后重试', '网络错误', {
+        confirmButtonText: '重试',
+        callback: (action) => {
+          if (action === 'confirm') {
+            retryVideo()
+          }
+        }
+      })
+    } else if (networkQuality.value === 'poor') {
+      ElMessageBox.confirm('网络状况不佳，视频可能加载缓慢。是否使用低质量模式?', '网络提示', {
+        confirmButtonText: '低质量模式',
+        cancelButtonText: '继续尝试',
+        type: 'warning'
+      }).then(() => {
+        // 切换到低质量模式
+        if (videoRef.value) {
+          videoRef.value.setAttribute('preload', 'none')
+          videoRef.value.setAttribute('playsinline', 'true')
+          videoRef.value.setAttribute('controlsList', 'nodownload')
+          retryVideo()
+        }
+      }).catch(() => {
+        retryVideo()
+      })
+    } else {
+      retryVideo()
+    }
+  }, 3000)
+}
+
+// 组件挂载时初始化
+onMounted(() => {
+  // 添加网络状态监听
+  window.addEventListener('online', handleNetworkChange)
+  window.addEventListener('offline', handleNetworkChange)
+  
+  // 初始化检查网络状态
+  handleNetworkChange()
+  
+  // 视频加载超时检测
+  if (props.video.originalVideo) {
+    loadingTimeout.value = setTimeout(() => {
+      if (!videoLoaded.value && !videoError.value) {
+        console.warn('视频加载超时')
+        videoError.value = true
+        errorMessage.value = '加载超时'
+      }
+    }, 20000) // 20秒超时
+  }
+})
+
+// 组件卸载时清理
+onUnmounted(() => {
+  clearTimeout(loadingTimer.value)
+  clearTimeout(loadingTimeout.value)
+  
+  // 移除事件监听
+  window.removeEventListener('online', handleNetworkChange)
+  window.removeEventListener('offline', handleNetworkChange)
+})
 </script>
 
 <style scoped>
@@ -471,5 +764,69 @@ const handleDelete = () => emit('delete', props.video)
 
 .edited-script .script-column-header h3 {
   color: #67c23a;
+}
+
+/* 添加新样式 */
+.video-placeholder,
+.video-loading,
+.video-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color:rgb(39, 39, 39);
+}
+
+.placeholder-text {
+  font-size: 16px;
+  color: #909399;
+}
+
+.video-loading {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+}
+
+.loading-icon {
+  font-size: 24px;
+  animation: spin 1.5s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.video-error {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.error-icon {
+  font-size: 40px;
+  color: #909399;
+  margin-bottom: 16px;
+}
+
+.error-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-text p {
+  margin: 0;
+  color: #606266;
+}
+
+.error-actions {
+  display: flex;
+  gap: 8px;
 }
 </style> 
