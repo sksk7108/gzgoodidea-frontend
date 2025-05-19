@@ -91,8 +91,14 @@ const handleLogin = async () => {
   if (!loginForm.account) {
     return ElMessage.warning('请输入用户名')
   }
+  if(loginForm.account.length < 3 || loginForm.account.length > 20){
+    return ElMessage.warning('用户名长度在 3 到 20 个字符')
+  }
   if (!loginForm.password) {
     return ElMessage.warning('请输入密码')
+  }
+  if(loginForm.password.length < 8 || loginForm.password.length > 30){
+    return ElMessage.warning('密码长度在 8 到 30 个字符')
   }
   
   try {
@@ -101,7 +107,7 @@ const handleLogin = async () => {
     ElMessage.success('登录成功')
     router.push('/videos')
   } catch (error) {
-    ElMessage.error(error.message || '登录失败')
+    ElMessage.error(error.msg || '登录失败')
   } finally {
     loading.value = false
   }

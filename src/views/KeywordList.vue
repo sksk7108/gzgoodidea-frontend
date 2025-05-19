@@ -2,7 +2,7 @@
   <div class="keyword-list-container">
     <!-- 操作栏 -->
     <div class="operation-bar">
-      <el-button type="primary" @click="openAddDialog">
+      <el-button :disabled="true" type="primary" @click="openAddDialog">
         <img src="@/assets/img/add.svg" style="width: 16px; height: 16px; margin-right: 5px;" />新增关键词
       </el-button>
       
@@ -92,7 +92,7 @@
         <el-form-item label="关键词" prop="content">
           <el-input v-model="keywordForm.content" placeholder="请输入关键词" />
         </el-form-item>
-        <el-form-item label="类型" prop="type">
+        <!-- <el-form-item label="类型" prop="type">
           <el-select v-model="keywordForm.type" placeholder="请选择类型" style="width: 100%">
             <el-option
               v-for="item in typeOptions"
@@ -101,7 +101,7 @@
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="查询时效" prop="expiryDays">
           <el-input-number
             v-model="keywordForm.expiryDays"
@@ -128,7 +128,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 // import { Plus } from '@element-plus/icons-vue'
-import { getKeywordList, addKeyword, deleteKeyword } from '@/api/keyword'
+import { getKeywordList, addKeyword, deleteKeyword, getKeywordGroupsList } from '@/api/keyword'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -142,7 +142,7 @@ const dialogVisible = ref(false)
 const keywordFormRef = ref(null)
 const keywordForm = reactive({
   content: '',
-  type: '',
+  type: '系统',
   expiryDays: 5
 })
 
@@ -150,14 +150,11 @@ const keywordForm = reactive({
 const keywordRules = {
   content: [
     { required: true, message: '请输入关键词', trigger: 'blur' },
-    { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
-  ],
-  type: [
-    { required: true, message: '请选择类型', trigger: 'change' }
+    { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
   ],
   expiryDays: [
     { required: true, message: '请输入查询时效', trigger: 'blur' },
-    { type: 'number', min: 1, max: 365, message: '时效天数在 1 到 365 之间', trigger: 'blur' }
+    { type: 'number', min: 1, max: 30, message: '时效天数在 1 到 30 之间', trigger: 'blur' }
   ]
 }
 
@@ -208,11 +205,11 @@ const fetchKeywordList = async () => {
       content: searchKeyword.value
     }
     
-    const response = await getKeywordList(params)
+    const response = await getKeywordGroupsList()
     
     // 根据实际接口返回格式进行适配
-    if (response && response.records) {
-      keywordList.value = response.records
+    if (response && response.groups.length>0) {
+      keywordList.value = response.groups[0].keywords
       total.value = response.total || 0
     } else {
       keywordList.value = Array.isArray(response) ? response : (response?.items || [])
@@ -250,7 +247,6 @@ const handleCurrentChange = (page) => {
 // 打开新增对话框
 const openAddDialog = () => {
   keywordForm.content = ''
-  keywordForm.type = ''
   keywordForm.expiryDays = 5
   dialogVisible.value = true
   // 延迟重置表单验证状态

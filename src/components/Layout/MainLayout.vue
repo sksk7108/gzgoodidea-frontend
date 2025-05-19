@@ -11,11 +11,12 @@
           :router="true"
           :ellipsis="false"
           :default-active="activeMenu"
+          class="menu"
         >
           <el-menu-item index="/videos">视频列表</el-menu-item>
           <el-menu-item index="/keywords">关键词列表</el-menu-item>
-          <el-menu-item index="/favorites">我的收藏</el-menu-item>
-          <el-menu-item index="/saved">已保存</el-menu-item>
+           <el-menu-item index="/favorites">我的收藏</el-menu-item>
+          <el-menu-item index="/saved">保存的文案</el-menu-item>
           <!-- 隐藏AI话术配置 -->
           <!-- <el-menu-item index="/ai-config">AI话术配置</el-menu-item> -->
         </el-menu>
@@ -106,12 +107,23 @@ const handleLogout = () => {
   font-weight: bold;
   margin-right: 40px;
   color: #409EFF;
+  transition: all 0.3s ease;
 }
 
 .logo-img {
   width: 30px;
   height: 30px;
   margin-right: 3px;
+}
+
+.menu {
+  min-width: 200px;
+  overflow: scroll;
+  transition: all 0.3s ease;
+}
+
+.menu::-webkit-scrollbar{
+  display: none;
 }
 
 .user-actions {
@@ -169,5 +181,42 @@ const handleLogout = () => {
 :deep(.el-menu) {
   flex: 1;
   border: none;
+}
+
+@media screen and (max-width: 2000px) {
+ 
+}
+
+@media screen and (max-width: 1600px) {
+  
+}
+
+@media screen and (max-width: 1200px) {
+}
+
+@media screen and (max-width: 900px) {
+  .logo {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+  .username {
+    font-size: 10px;
+  }
+  .menu{
+    max-width: 400px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+}
+@media screen and (max-width: 600px) {
+  .logo {
+    display: none;
+  }
+  .username {
+    display: none;
+  }
+  .menu{
+    max-width: 300px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
 }
 </style> 

@@ -45,21 +45,19 @@ service.interceptors.response.use(
     // 情况1: { code: 200, data: {}, message: '' }
     if (res.code !== undefined) {
       if (res.code !== 200) {
-        ElMessage.error(res.message || '服务器响应异常')
+        ElMessage.error(res.msg || '服务器响应异常')
         
         // 处理特定错误码
         if (res.code === 401) {
           // token 过期或未登录
           localStorage.removeItem('token')
-          localStorage.removeItem('isAdmin')
-          
+          sessionStorage.removeItem('token')
+
           // 跳转到登录页
-          setTimeout(() => {
-            window.location.href = '/login'
-          }, 1500)
+          return
         }
         
-        return Promise.reject(new Error(res.message || '服务器响应异常'))
+        return Promise.reject(new Error(res.msg || '服务器响应异常'))
       }
       
       return res.data

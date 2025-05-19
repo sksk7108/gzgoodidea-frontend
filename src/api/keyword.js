@@ -10,6 +10,15 @@ export function getKeywordList(params) {
 }
 
 /**
+ * 获取关键词列表
+ * @param {Object} params - 查询参数
+ * @returns {Promise}
+ */
+export function getKeywordGroupsList() {
+    return get('/employee/keywords')
+}
+
+/**
  * 新增关键词
  * @param {Object} data - 关键词数据
  * @returns {Promise}

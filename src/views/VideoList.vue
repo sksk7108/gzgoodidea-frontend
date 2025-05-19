@@ -157,7 +157,7 @@ import { ref, reactive, onMounted, computed, provide } from 'vue'
 import VideoCard from '@/components/VideoCard.vue'
 import { getVideoList, auditVideoStatus, deleteVideo } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { getKeywordList } from '@/api/keyword'
+import { getKeywordList, getKeywordGroupsList } from '@/api/keyword'
 import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 
 // 提供全局视频播放状态
@@ -180,7 +180,7 @@ const maxTagsToShow = 30 // 未展开时最多显示的标签数量
 // 筛选表单
 const filterForm = reactive({
   source: '',
-  sortBy: 'createTime',
+  sortBy: '',
   sortOrder: 'desc' // 默认降序排序
 })
 
@@ -215,7 +215,7 @@ const toggleTagExpand = () => {
 const sortOptions = [
   {
     label: '发布时间',
-    value: 'createTime'
+    value: ''
   },
   {
     label: '点赞数',
@@ -338,8 +338,12 @@ const fetchVideoList = async () => {
 
 // 获取标签选项
 const fetchTagOptions = async () => {
-  const response = await getKeywordList()
-  tagOptions.value = response.map(tag => ({
+  let keywordList
+  const response = await getKeywordGroupsList()
+  if (response && response.groups) {
+    keywordList = response.groups[0].keywords
+  }
+  tagOptions.value = keywordList.map(tag => ({
     label: tag.content,
     value: tag.content
   }))

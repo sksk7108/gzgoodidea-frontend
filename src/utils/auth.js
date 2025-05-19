@@ -8,7 +8,7 @@ const USER_INFO_KEY = 'user_info'
 const REMEMBER_USERNAME_KEY = 'remember_username'
 // 记住密码标记
 const REMEMBER_PASSWORD_KEY = 'remember_password'
-// 存储的密码键名（实际项目中应当考虑加密）
+// 存储的密码键名
 const STORED_PASSWORD_KEY = 'stored_password'
 
 /**
