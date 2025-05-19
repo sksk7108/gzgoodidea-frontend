@@ -1,0 +1,1 @@
+When providing code files, to prevent a single file from being too long, output the code in chunks of 200 lines at a time. In subsequent replies, only output the parts that were added or changed — never send the entire file again.

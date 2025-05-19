@@ -1,7 +1,7 @@
 <!-- VideoCard.vue -->
 <template>
   <el-card class="video-card" :body-style="{ padding: '0' }">
-    <div class="video-player">
+    <div class="video-player" ref="videoPlayerRef">
       <template v-if="!video.originalVideo">
         <div class="video-placeholder">
           <div class="placeholder-text">暂无视频</div>
@@ -18,6 +18,8 @@
           @stalled="handleVideoStalled"
           @waiting="handleVideoWaiting"
           @canplay="videoLoaded = true"
+          @play="handleVideoPlay"
+          @pause="handleVideoPause"
           v-show="videoLoaded && !videoError"
         >
           <!-- 动态生成source标签 -->
@@ -57,6 +59,15 @@
           <h3 class="video-title">{{ video.title }}</h3>
           <div class="video-meta">
             <span class="source">{{ video.hotSource }}</span>
+            <div class="video-original-link" v-if="video.videoUrl && video.hotSource !== '视频号'">
+              <a :href="video.videoUrl" target="_blank" class="source-link">
+                <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
+                  <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#409eff" p-id="15975"></path>
+                  <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#409eff" p-id="15976"></path>
+                </svg>
+                {{ formatUrl(video.originalLink) }}
+              </a>
+            </div>
             <span class="time">{{ video.importTime }}</span>
           </div>
         </div>
@@ -98,6 +109,7 @@
             {{ video.keywords }}
           </el-tag>
         </div>
+        
         <div class="scripts-container">
           <div class="script-card original" @click="showScriptCompare">
             <div class="script-header">
@@ -120,6 +132,22 @@
         </div>
       </div>
       <div class="video-actions">
+<!--        <el-button type="primary" size="small" @click="handleFavorite" :loading="favoriteLoading">-->
+<!--          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">-->
+<!--              <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>-->
+<!--          </svg>-->
+<!--          {{ isFavorite ? '已收藏' : '收藏' }}-->
+<!--        </el-button>-->
+<!--        <el-button type="success" size="small" @click="handleEdit">-->
+<!--          <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="16" height="16" style="margin-right: 5px;"><path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>-->
+<!--          编辑保存-->
+<!--        </el-button>-->
+<!--        <el-button type="danger" size="small" :disabled="true" @click="handleDelete">-->
+<!--          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">-->
+<!--            <path d="M352 192V112a48 48 0 0 1 48-48h224a48 48 0 0 1 48 48v80h224a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H128a16 16 0 0 1-16-16v-32a16 16 0 0 1 16-16h224z m64 0h192v-64H416v64zM192 288h640l-36.576 624.704A96 96 0 0 1 699.84 992H324.16a96 96 0 0 1-95.584-79.296L192 288z m480 143.552a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m-288 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m144 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z" fill="#f0f0f0" p-id="7121"></path>-->
+<!--          </svg>-->
+<!--          删除-->
+<!--        </el-button>-->
         <template v-if="video.auditStatus === 0">
           <el-button type="success" size="small" @click="handleApprove">通过</el-button>
           <el-button type="warning" size="small" @click="handleReject">拒绝</el-button>
@@ -145,6 +173,7 @@
       :close-on-click-modal="true"
       :close-on-press-escape="true"
       class="script-compare-dialog"
+      header-class="script-compare-header1"
     >
       <div class="script-compare-container">
         <div class="script-compare-header">
@@ -174,13 +203,64 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 编辑弹窗 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="编辑视频信息"
+      width="50%"
+      :before-close="closeEditDialog"
+      append-to-body
+    >
+      <el-form :model="editForm" label-width="120px" ref="editFormRef">
+        <el-form-item label="视频标题" prop="title" :rules="[{ required: true, message: '请输入标题', trigger: 'blur' }]">
+          <el-input v-model="editForm.title" placeholder="请输入标题"></el-input>
+        </el-form-item>
+        
+        <el-form-item label="标签" prop="topic">
+          <el-input 
+            type="textarea" 
+            v-model="editForm.topic" 
+            placeholder="请输入标签，多个标签使用#分隔，例如：#美妆#时尚"
+            :rows="2"
+          ></el-input>
+          <div class="form-tips">格式说明：多个标签使用#分隔，例如：#美妆#时尚</div>
+        </el-form-item>
+        
+        <el-form-item label="关键词" prop="keywords">
+          <el-input 
+            type="textarea" 
+            v-model="editForm.keywords" 
+            placeholder="请输入关键词，多个关键词使用逗号分隔"
+            :rows="2"
+          ></el-input>
+          <div class="form-tips">格式说明：多个关键词使用逗号分隔，例如：彩妆,护肤,保养</div>
+        </el-form-item>
+        
+        <el-form-item label="改写后话术" prop="editedScript" :rules="[{ required: true, message: '请输入改写后话术', trigger: 'blur' }]">
+          <el-input 
+            type="textarea" 
+            v-model="editForm.editedScript" 
+            placeholder="请输入改写后话术"
+            :rows="8"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="closeEditDialog">取消</el-button>
+          <el-button type="primary" @click="saveEdits" :loading="saveLoading">保存</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </el-card>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, inject, nextTick } from 'vue'
 // import { Loading, VideoPlay, Connection, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { toggleVideoFavorite, saveVideoInfo } from '@/api/video'
 
 // 定义props
 const props = defineProps({
@@ -192,6 +272,7 @@ const props = defineProps({
 
 // 视频相关状态
 const videoRef = ref(null)
+const videoPlayerRef = ref(null)
 const videoLoaded = ref(false)
 const videoError = ref(false)
 const loadAttempts = ref(0)
@@ -199,6 +280,11 @@ const errorMessage = ref('未知错误')
 const loadingStatus = ref('')
 const loadingTimer = ref(null)
 const loadingTimeout = ref(null)
+const isVideoVisible = ref(true)
+const observer = ref(null)
+
+// 全局视频控制
+const currentlyPlaying = inject('currentlyPlaying', { videoId: null })
 
 // 网络状态检测
 const isOffline = ref(false)
@@ -207,9 +293,7 @@ const networkQuality = ref('unknown')
 // 视频URL和MIME类型处理
 const videoUrl = computed(() => {
   if (!props.video.originalVideo) return ''
-  // 添加时间戳参数，防止缓存问题
-  const timestamp = new Date().getTime()
-  return `/api/api/videos/file/${props.video.originalVideo}`
+  return `/api/videos/file/${props.video.originalVideo}`
 })
 
 // 获取视频MIME类型
@@ -244,6 +328,55 @@ const canPlayVideo = computed(() => {
   
   return true
 })
+
+// 视频播放处理
+const handleVideoPlay = () => {
+  if (videoRef.value && videoRef.value.paused === false) {
+    // 如果有其他正在播放的视频，暂停它
+    if (currentlyPlaying.videoId && currentlyPlaying.videoId !== props.video.id) {
+      // 发送暂停事件到之前播放的视频
+      window.dispatchEvent(new CustomEvent('pauseOtherVideos', {
+        detail: { exceptId: props.video.id }
+      }))
+    }
+    // 更新当前播放的视频ID
+    currentlyPlaying.videoId = props.video.id
+  }
+}
+
+// 视频暂停处理
+const handleVideoPause = () => {
+  // 如果当前视频是全局正在播放的视频，则清除该状态
+  if (currentlyPlaying.videoId === props.video.id) {
+    currentlyPlaying.videoId = null
+  }
+}
+
+// 暂停视频
+const pauseVideo = () => {
+  if (videoRef.value && !videoRef.value.paused) {
+    videoRef.value.pause()
+  }
+}
+
+// 监听全局暂停事件
+const handleGlobalPause = (event) => {
+  // 如果事件指定了例外ID，且当前视频不是例外，则暂停
+  if (event.detail.exceptId !== props.video.id) {
+    pauseVideo()
+  }
+}
+
+// 处理视频可见性变化
+const handleVisibilityChange = (entries) => {
+  const [entry] = entries
+  isVideoVisible.value = entry.isIntersecting
+  
+  // 如果视频不可见且正在播放，则暂停
+  if (!isVideoVisible.value && videoRef.value && !videoRef.value.paused) {
+    pauseVideo()
+  }
+}
 
 // 视频错误处理
 const handleVideoError = (e) => {
@@ -340,6 +473,19 @@ const retryVideo = () => {
   }, 500)
 }
 
+// 收藏和编辑状态
+const isFavorite = ref(false)
+const favoriteLoading = ref(false)
+const editDialogVisible = ref(false)
+const saveLoading = ref(false)
+const editFormRef = ref(null)
+const editForm = ref({
+  title: '',
+  topic: '',
+  keywords: '',
+  editedScript: ''
+})
+
 // 话术对比弹窗
 const compareDialogVisible = ref(false)
 
@@ -355,12 +501,91 @@ const getFileExtension = (filename) => {
 }
 
 // 定义事件
-const emit = defineEmits(['approve', 'reject', 'delete'])
+const emit = defineEmits(['favorite', 'save', 'delete'])
 
 // 处理操作事件
+// const handleFavorite = async () => {
+//   favoriteLoading.value = true
+//   try {
+//     await toggleVideoFavorite(props.video.id, !isFavorite.value)
+//     isFavorite.value = !isFavorite.value
+//
+//     // 更新本地存储状态
+//     localStorage.setItem(`favorite_${props.video.id}`, isFavorite.value)
+//
+//     // 触发事件通知父组件
+//     emit('favorite', { ...props.video, isFavorite: isFavorite.value })
+//
+//     ElMessage.success(isFavorite.value ? '收藏成功' : '已取消收藏')
+//   } catch (error) {
+//     console.error('收藏操作失败:', error)
+//     ElMessage.error('操作失败，请重试')
+//   } finally {
+//     favoriteLoading.value = false
+//   }
+// }
+
+// const handleEdit = () => {
+//   editForm.value = {
+//     title: props.video.title,
+//     topic: props.video.topic || '',
+//     keywords: props.video.keywords || '',
+//     editedScript: props.video.editedScript || ''
+//   }
+//   editDialogVisible.value = true
+// }
+
+const closeEditDialog = () => {
+  editDialogVisible.value = false
+  if (editFormRef.value) {
+    editFormRef.value.resetFields()
+  }
+}
+
+const saveEdits = async () => {
+  if (!editFormRef.value) return
+  
+  await editFormRef.value.validate(async (valid) => {
+    if (valid) {
+      saveLoading.value = true
+      try {
+        // 构建保存的数据
+        const saveData = {
+          id: props.video.id,
+          title: editForm.value.title,
+          topic: editForm.value.topic,
+          keywords: editForm.value.keywords,
+          editedScript: editForm.value.editedScript
+        }
+        
+        // 调用接口保存编辑
+        await saveVideoInfo(saveData)
+        
+        // 通知父组件更新
+        emit('save', {
+          ...props.video,
+          title: editForm.value.title,
+          topic: editForm.value.topic,
+          keywords: editForm.value.keywords,
+          editedScript: editForm.value.editedScript
+        })
+        
+        ElMessage.success('保存成功')
+        editDialogVisible.value = false
+      } catch (error) {
+        console.error('保存失败:', error)
+        ElMessage.error('保存失败，请重试')
+      } finally {
+        saveLoading.value = false
+      }
+    }
+  })
+}
+
+// 定义事件
+const handleDelete = () => emit('delete', props.video)
 const handleApprove = () => emit('approve', props.video)
 const handleReject = () => emit('reject', props.video)
-const handleDelete = () => emit('delete', props.video)
 
 // 检测网络变化
 const handleNetworkChange = () => {
@@ -380,75 +605,28 @@ const handleNetworkChange = () => {
   }
 }
 
-// 检测网络质量
-const checkNetworkQuality = async () => {
+// 格式化URL显示
+const formatUrl = (url) => {
+  if (!url) return '';
   try {
-    const startTime = Date.now()
-    const response = await fetch('/api/ping', { method: 'HEAD' })
-    const endTime = Date.now()
-    
-    if (response.ok) {
-      const latency = endTime - startTime
-      
-      if (latency < 300) {
-        networkQuality.value = 'good'
-      } else if (latency < 1000) {
-        networkQuality.value = 'average'
-      } else {
-        networkQuality.value = 'poor'
-        console.warn(`网络延迟高: ${latency}ms`)
-      }
-    }
-  } catch (error) {
-    console.error('网络质量检测失败:', error)
-    networkQuality.value = 'poor'
+    const urlObj = new URL(url);
+    return urlObj.hostname + (urlObj.pathname !== '/' ? urlObj.pathname : '');
+  } catch (e) {
+    return url;
   }
-}
-
-// 智能重试
-const smartRetry = () => {
-  // 等待3秒检测网络，然后决定如何处理
-  loadingStatus.value = '正在检测网络...'
-  
-  setTimeout(async () => {
-    await checkNetworkQuality()
-    
-    if (isOffline.value) {
-      ElMessageBox.alert('网络已断开，请检查网络连接后重试', '网络错误', {
-        confirmButtonText: '重试',
-        callback: (action) => {
-          if (action === 'confirm') {
-            retryVideo()
-          }
-        }
-      })
-    } else if (networkQuality.value === 'poor') {
-      ElMessageBox.confirm('网络状况不佳，视频可能加载缓慢。是否使用低质量模式?', '网络提示', {
-        confirmButtonText: '低质量模式',
-        cancelButtonText: '继续尝试',
-        type: 'warning'
-      }).then(() => {
-        // 切换到低质量模式
-        if (videoRef.value) {
-          videoRef.value.setAttribute('preload', 'none')
-          videoRef.value.setAttribute('playsinline', 'true')
-          videoRef.value.setAttribute('controlsList', 'nodownload')
-          retryVideo()
-        }
-      }).catch(() => {
-        retryVideo()
-      })
-    } else {
-      retryVideo()
-    }
-  }, 3000)
 }
 
 // 组件挂载时初始化
 onMounted(() => {
+  // 读取收藏状态
+  isFavorite.value = localStorage.getItem(`favorite_${props.video.id}`) === 'true'
+  
   // 添加网络状态监听
   window.addEventListener('online', handleNetworkChange)
   window.addEventListener('offline', handleNetworkChange)
+  
+  // 添加全局视频暂停事件监听
+  window.addEventListener('pauseOtherVideos', handleGlobalPause)
   
   // 初始化检查网络状态
   handleNetworkChange()
@@ -463,6 +641,18 @@ onMounted(() => {
       }
     }, 20000) // 20秒超时
   }
+
+  // 初始化IntersectionObserver观察视频是否在可视区域内
+  nextTick(() => {
+    if (videoPlayerRef.value) {
+      observer.value = new IntersectionObserver(handleVisibilityChange, {
+        root: null, // 使用视口作为根
+        threshold: 0.3 // 当30%的视频可见时触发回调
+      })
+      
+      observer.value.observe(videoPlayerRef.value)
+    }
+  })
 })
 
 // 组件卸载时清理
@@ -473,6 +663,17 @@ onUnmounted(() => {
   // 移除事件监听
   window.removeEventListener('online', handleNetworkChange)
   window.removeEventListener('offline', handleNetworkChange)
+  window.removeEventListener('pauseOtherVideos', handleGlobalPause)
+  
+  // 清理IntersectionObserver
+  if (observer.value) {
+    observer.value.disconnect()
+  }
+
+  // 如果当前视频是正在播放的视频，清除该状态
+  if (currentlyPlaying.videoId === props.video.id) {
+    currentlyPlaying.videoId = null
+  }
 })
 </script>
 
@@ -666,6 +867,7 @@ onUnmounted(() => {
 }
 
 /* 话术对比弹窗样式 */
+
 .script-compare-dialog :deep(.el-dialog__body) {
   padding: 0;
   height: 100%;
@@ -711,7 +913,7 @@ onUnmounted(() => {
 .script-compare-content {
   display: flex;
   flex: 1;
-  padding: 24px;
+  padding: 24px 0;
   gap: 24px;
   height: calc(100vh - 100px);
   overflow: hidden;
@@ -828,5 +1030,42 @@ onUnmounted(() => {
 .error-actions {
   display: flex;
   gap: 8px;
+}
+
+.video-original-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.source-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #409eff;
+  text-decoration: none;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 400px;
+  transition: opacity 0.2s;
+}
+
+.source-link:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.link-icon {
+  flex-shrink: 0;
+}
+
+.form-tips {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.4;
+  margin-top: 5px;
 }
 </style> 

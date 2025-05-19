@@ -23,7 +23,7 @@
             <el-input
               v-model="promptForm.prompt"
               type="textarea"
-              :rows="10"
+              :rows="15"
               placeholder="请输入AI提示词，用于指导AI生成话术"
             />
           </el-form-item>
@@ -50,7 +50,7 @@
             <el-input
               v-model="knowledgeForm.content"
               type="textarea"
-              :rows="10"
+              :rows="15"
               placeholder="请输入知识库内容"
             />
           </el-form-item>
@@ -102,7 +102,7 @@ const handleSavePrompt = async () => {
     ElMessage.warning('请输入提示词内容')
     return
   }
-  await savePrompt(promptForm)
+  await savePrompt({content: promptForm.prompt})
   ElMessage.success('提示词配置保存成功')
 }
 
@@ -135,9 +135,10 @@ onMounted(() => {
 
 <style scoped>
 .ai-config {
-  padding: 20px;
+  padding: 0 20px;
   max-width: 1200px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .config-tabs {
@@ -157,14 +158,14 @@ onMounted(() => {
 }
 
 .config-content {
-  padding: 20px 0;
+  padding: 0;
 }
 
 .actions {
   display: flex;
   justify-content: center;
   gap: 20px;
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 :deep(.el-form-item__label) {
@@ -173,5 +174,10 @@ onMounted(() => {
 
 :deep(.el-input__textarea) {
   font-size: 14px;
+}
+
+:deep(.el-card__header) {
+  padding-bottom: 0;
+  padding-top: 0;
 }
 </style> 

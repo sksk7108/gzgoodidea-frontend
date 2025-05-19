@@ -6,7 +6,7 @@ import { get, post, put, del } from '@/utils/request'
  * @returns {Promise}
  */
 export function getVideoList(params) {
-  return get('/api/videos', params)
+  return get('/videos', params)
 }
 
 /**
@@ -15,7 +15,7 @@ export function getVideoList(params) {
  * @returns {Promise}
  */
 export function getVideoDetail(id) {
-  return get(`/api/videos/${id}`)
+  return get(`/videos/${id}`)
 }
 
 /**
@@ -25,7 +25,7 @@ export function getVideoDetail(id) {
  * @returns {Promise}
  */
 export function getVideosByTag(tag, params) {
-  return get('/api/videos/list', { ...params, keywords: tag })
+  return get('/videos/list', { ...params, keywords: tag })
 }
 
 /**
@@ -35,7 +35,7 @@ export function getVideosByTag(tag, params) {
  * @returns {Promise}
  */
 export function getVideosBySource(source, params) {
-  return get('/api/videos/list', { ...params, hotSource: source })
+  return get('/videos/list', { ...params, hotSource: source })
 }
 
 /**
@@ -44,7 +44,7 @@ export function getVideosBySource(source, params) {
  * @returns {Promise}
  */
 export function auditVideoStatus(id, data) {
-  return put(`/api/videos/${id}/audit?status=${data.status}`)
+  return put(`/videos/${id}/audit?status=${data.status}`)
 }
 
 
@@ -54,5 +54,24 @@ export function auditVideoStatus(id, data) {
  * @returns {Promise}
  */
 export function deleteVideo(id) {
-  return del(`/api/videos/${id}`)
+  return del(`/videos/${id}`)
+}
+
+/**
+ * 收藏/取消收藏视频
+ * @param {String} id - 视频ID
+ * @param {Boolean} isFavorite - 是否收藏
+ * @returns {Promise}
+ */
+export function toggleVideoFavorite(id, isFavorite) {
+  return put(`/videos/${id}/favorite`, { isFavorite })
+}
+
+/**
+ * 编辑保存视频信息
+ * @param {Object} data - 视频数据
+ * @returns {Promise}
+ */
+export function saveVideoInfo(data) {
+  return put(`/videos/${data.id}`, data)
 } 

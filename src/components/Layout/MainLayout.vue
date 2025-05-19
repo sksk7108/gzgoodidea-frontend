@@ -9,12 +9,22 @@
         <el-menu
           mode="horizontal"
           :router="true"
+          :ellipsis="false"
           :default-active="activeMenu"
         >
           <el-menu-item index="/videos">视频列表</el-menu-item>
           <el-menu-item index="/keywords">关键词列表</el-menu-item>
-          <el-menu-item index="/ai-config">AI话术配置</el-menu-item>
+          <el-menu-item index="/favorites">我的收藏</el-menu-item>
+          <el-menu-item index="/saved">已保存</el-menu-item>
+          <!-- 隐藏AI话术配置 -->
+          <!-- <el-menu-item index="/ai-config">AI话术配置</el-menu-item> -->
         </el-menu>
+        
+        <!-- 用户信息和退出按钮 -->
+        <div class="user-actions">
+          <span class="username">{{ userStore.username }}</span>
+          <el-button type="text" @click="handleLogout">退出登录</el-button>
+        </div>
       </el-header>
       <el-main class="main-container">
         <router-view></router-view>
@@ -25,10 +35,33 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores'
 
 const route = useRoute()
+const router = useRouter()
+const userStore = useUserStore()
 const activeMenu = computed(() => route.path)
+
+// 处理退出登录
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    try {
+      await userStore.logout()
+      ElMessage.success('已退出登录')
+      router.push('/login')
+    } catch (error) {
+      ElMessage.error('退出登录失败')
+    }
+  }).catch(() => {
+    // 点击取消按钮，不做任何操作
+  })
+}
 </script>
 
 <style scoped>
@@ -65,6 +98,18 @@ const activeMenu = computed(() => route.path)
   width: 30px;
   height: 30px;
   margin-right: 3px;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.username {
+  margin-right: 10px;
+  font-size: 14px;
+  color: #606266;
 }
 
 .main-container {

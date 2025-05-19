@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base:'/',
   plugins: [vue()],
   resolve: {
     alias: {
@@ -11,17 +12,19 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3001, // 设置开发服务器端口 // 自动打开浏览器
+    port: 3001, // 设置开发服务器端口
     cors: true, // 允许跨域
     proxy: {
       // 配置代理
       '/api': {
-        target: 'http://localhost:8082', // 目标服务器
+        // target: 'http://localhost:8082', // 目标后端服务器
+        // target: 'http://192.168.2.30:8082',
+        target: 'http://192.168.2.21:8082',
         changeOrigin: true, // 改变源
         secure: false, // 接受无效证书
         ws: true, // 代理 websockets
-        rewrite: (path) => path.replace(/^\/api/, ''), // 将 /api 重写为空
-        configure: (proxy, _options) => {
+        // rewrite: (path) => path.replace(/^\/api/, ''), // 将 /api 重写为空
+        /* configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('代理错误:', err);
           });
@@ -31,7 +34,7 @@ export default defineConfig({
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('收到代理响应:', proxyRes.statusCode, req.url);
           });
-        }
+        } */
       },
     }
   },

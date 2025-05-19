@@ -8,18 +8,61 @@
         <el-button type="text" @click="resetFilter">清空筛选</el-button>
       </div>
       
+      <!-- 标签搜索 -->
+      <div class="tag-search">
+        <el-input
+          v-model="tagSearchKeyword"
+          placeholder="搜索标签关键字"
+          clearable
+          @input="filterTags"
+          prefix-icon="el-icon-search"
+          class="tag-search-input"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+      
       <!-- 标签云 -->
       <div class="tag-cloud">
         <el-tag
-          v-for="tag in tagOptions"
+          v-for="tag in displayedTags"
           :key="tag.value"
-          :type="selectedTag === tag.value ? 'primary' : 'info'"
+          :type="selectedTags.includes(tag.value) ? 'primary' : 'info'"
           class="tag-item"
           @click="selectTag(tag.value)"
-          :effect="selectedTag === tag.value ? 'dark' : 'plain'"
+          :effect="selectedTags.includes(tag.value) ? 'dark' : 'plain'"
         >
           {{ tag.label }}
         </el-tag>
+      </div>
+      
+      <!-- 展开/收起按钮 -->
+      <div class="tag-expand-btn" v-if="filteredTagOptions.length > maxTagsToShow">
+        <el-button type="text" @click="toggleTagExpand">
+          {{ isTagExpanded ? '收起' : '展开更多' }}
+          <el-icon>
+            <component :is="isTagExpanded ? 'ArrowUp' : 'ArrowDown'" />
+          </el-icon>
+        </el-button>
+      </div>
+      
+      <!-- 选中的多标签展示 -->
+      <div class="selected-tags" v-if="selectedTags.length > 0">
+        <div class="source-label">已选标签：</div>
+        <div class="selected-tags-container">
+          <el-tag
+            v-for="tag in selectedTags"
+            :key="tag"
+            closable
+            type="primary"
+            @close="removeTag(tag)"
+            class="selected-tag"
+          >
+            {{ tag }}
+          </el-tag>
+        </div>
       </div>
       
       <!-- 视频来源 -->
@@ -43,6 +86,39 @@
           </div>
         </div>
       </div>
+      
+      <!-- 排序功能 -->
+      <div class="sort-filter">
+        <div class="source-label">排序方式：</div>
+        <div class="sort-items">
+          <div 
+            v-for="sortOption in sortOptions" 
+            :key="sortOption.value"
+            class="sort-item"
+            :class="{ 'active': filterForm.sortBy === sortOption.value }"
+            @click="selectSortOption(sortOption.value)"
+          >
+            <span>{{ sortOption.label }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 排序顺序选择 -->
+      <div class="sort-order-filter" v-if="filterForm.sortBy">
+        <div class="source-label">排序顺序：</div>
+        <div class="sort-order-options">
+          <el-radio-group v-model="filterForm.sortOrder" @change="handleSortOrderChange">
+            <el-radio-button label="desc">
+              <el-icon class="sort-order-icon"><ArrowDown /></el-icon>
+              降序
+            </el-radio-button>
+            <el-radio-button label="asc">
+              <el-icon class="sort-order-icon"><ArrowUp /></el-icon>
+              升序
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+      </div>
     </el-card>
 
     <!-- 视频列表 -->
@@ -52,6 +128,8 @@
           v-for="video in videoList"
           :key="video.id"
           :video="video"
+          @favorite="handleFavorite"
+          @save="handleSave"
           @approve="handleApprove"
           @reject="handleReject"
           @delete="handleDelete"
@@ -75,24 +153,92 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, provide } from 'vue'
 import VideoCard from '@/components/VideoCard.vue'
-import { getVideoList, getVideosByTag, getVideosBySource, auditVideoStatus, deleteVideo } from '@/api/video'
+import { getVideoList, auditVideoStatus, deleteVideo } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { getKeywordList } from '@/api/keyword'
+import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
+
+// 提供全局视频播放状态
+const currentlyPlaying = reactive({ videoId: null })
+provide('currentlyPlaying', currentlyPlaying)
+
 // 加载状态
 const loading = ref(false)
 
-// 选中的标签
-const selectedTag = ref('')
+// 标签搜索关键字
+const tagSearchKeyword = ref('')
+
+// 选中的标签（多选）
+const selectedTags = ref([])
+
+// 标签展开收起状态
+const isTagExpanded = ref(false)
+const maxTagsToShow = 30 // 未展开时最多显示的标签数量
 
 // 筛选表单
 const filterForm = reactive({
-  source: ''
+  source: '',
+  sortBy: 'createTime',
+  sortOrder: 'desc' // 默认降序排序
 })
 
 // 标签选项
 const tagOptions = ref([])
+
+// 过滤后的标签选项
+const filteredTagOptions = computed(() => {
+  if (!tagSearchKeyword.value) {
+    return tagOptions.value
+  }
+  return tagOptions.value.filter(tag => 
+    tag.label.toLowerCase().includes(tagSearchKeyword.value.toLowerCase())
+  )
+})
+
+// 显示的标签（考虑展开/收起状态）
+const displayedTags = computed(() => {
+  if (isTagExpanded.value || filteredTagOptions.value.length <= maxTagsToShow) {
+    return filteredTagOptions.value
+  } else {
+    return filteredTagOptions.value.slice(0, maxTagsToShow)
+  }
+})
+
+// 切换标签展开状态
+const toggleTagExpand = () => {
+  isTagExpanded.value = !isTagExpanded.value
+}
+
+// 排序选项
+const sortOptions = [
+  {
+    label: '发布时间',
+    value: 'createTime'
+  },
+  {
+    label: '点赞数',
+    value: 'likeCount'
+  },
+  {
+    label: '评论数',
+    value: 'commentCount'
+  },
+  {
+    label: '分享数',
+    value: 'shareCount'
+  },
+  {
+    label: '收藏数',
+    value: 'favoriteCount'
+  }
+]
+
+// 处理排序顺序改变
+const handleSortOrderChange = () => {
+  fetchVideoList()
+}
 
 // 分页数据
 const currentPage = ref(1)
@@ -109,30 +255,30 @@ const sourceOptions = [
     value: '',
   },
   {
+      label: '视频号',
+      value: '视频号',
+      png_src: '/shipinhao.png'
+  },
+  {
     label: '抖音',
     value: '抖音',
     png_src: '/douyin.png'
-  },
-  {
-    label: '视频号',
-    value: '视频号',
-    png_src: '/shipinhao.png'
-  },
-  {
-    label: '快手',
-    value: '快手',
-    png_src: '/kuaishou.png'
-  },
-  {
-    label: '小红书',
-    value: '小红书',
-    png_src: '/xiaohongshu.png'
-  },
-  {
-    label: 'B站',
-    value: 'B站',
-    png_src: '/bilibili.png'
   }
+  // {
+  //   label: '快手',
+  //   value: '快手',
+  //   png_src: '/kuaishou.png'
+  // },
+  // {
+  //   label: '小红书',
+  //   value: '小红书',
+  //   png_src: '/xiaohongshu.png'
+  // },
+  // {
+  //   label: 'B站',
+  //   value: 'B站',
+  //   png_src: '/bilibili.png'
+  // }
 ]
 
 function formatTopicForHTML(topic) {
@@ -148,8 +294,10 @@ const fetchVideoList = async () => {
     const params = {
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      keywords: selectedTag.value,
-      hotSource: filterForm.source
+      keywords: selectedTags.value.join(','), // 用逗号连接多个标签
+      hotSource: filterForm.source,
+      sortBy: filterForm.sortBy, // 排序字段
+      sortOrder: filterForm.sortOrder // 排序顺序
     }
     
     console.log('请求参数:', params)
@@ -207,16 +355,39 @@ onMounted(() => {
   fetchTagOptions()
 })
 
-// 选择标签（单选）
+// 过滤标签
+const filterTags = () => {
+  // 计算属性已处理标签过滤
+  isTagExpanded.value = false // 重置展开状态
+}
+
+// 选择标签（多选）
 const selectTag = (tagValue) => {
-  // 如果点击已选中的标签，则取消选择
-  if (selectedTag.value === tagValue) {
-    selectedTag.value = ''
+  // 如果是"全部"标签，清空所有选择
+  if (tagValue === '') {
+    selectedTags.value = []
   } else {
-    selectedTag.value = tagValue
+    // 如果已选中，则取消选择
+    const index = selectedTags.value.indexOf(tagValue)
+    if (index > -1) {
+      selectedTags.value.splice(index, 1)
+    } else {
+      // 否则添加到选中数组
+      selectedTags.value.push(tagValue)
+    }
   }
   currentPage.value = 1
   fetchVideoList()
+}
+
+// 移除选中的标签
+const removeTag = (tag) => {
+  const index = selectedTags.value.indexOf(tag)
+  if (index > -1) {
+    selectedTags.value.splice(index, 1)
+    currentPage.value = 1
+    fetchVideoList()
+  }
 }
 
 // 选择来源
@@ -226,10 +397,28 @@ const selectSource = (sourceValue) => {
   fetchVideoList()
 }
 
+// 选择排序方式
+const selectSortOption = (sortValue) => {
+  // 如果点击已选中的排序方式，则清除排序
+  if (filterForm.sortBy === sortValue) {
+    filterForm.sortBy = ''
+  } else {
+    filterForm.sortBy = sortValue
+    // 默认降序
+    filterForm.sortOrder = 'desc'
+  }
+  currentPage.value = 1
+  fetchVideoList()
+}
+
 // 重置筛选
 const resetFilter = () => {
-  selectedTag.value = ''
+  selectedTags.value = []
+  tagSearchKeyword.value = ''
   filterForm.source = ''
+  filterForm.sortBy = 'createTime'
+  filterForm.sortOrder = 'desc'
+  isTagExpanded.value = false
   currentPage.value = 1
   fetchVideoList()
 }
@@ -240,39 +429,57 @@ const handlePageChange = (page) => {
   fetchVideoList()
 }
 
-// 通过视频
+// 处理视频收藏
+const handleFavorite = (video) => {
+  // 更新本地视频列表数据
+  const index = videoList.value.findIndex(item => item.id === video.id)
+  if (index !== -1) {
+    videoList.value[index] = { ...videoList.value[index], ...video }
+  }
+}
+
+// 处理视频保存
+const handleSave = (video) => {
+  // 更新本地视频列表数据
+  const index = videoList.value.findIndex(item => item.id === video.id)
+  if (index !== -1) {
+    videoList.value[index] = { ...videoList.value[index], ...video }
+    // 格式化topic
+    videoList.value[index].formattedTopic = formatTopicForHTML(video.topic)
+  }
+}
+
 const handleApprove = (video) => {
-  ElMessageBox.confirm('确认通过该视频吗？', '提示', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'info'
-  }).then(async () => {
-    try {
-      await auditVideoStatus(video.id, { status: 1 })
-      ElMessage.success('操作成功')
-      fetchVideoList() // 刷新数据
-    } catch (error) {
-      ElMessage.error('操作失败')
-    }
-  }).catch(() => {})
+    ElMessageBox.confirm('确认通过该视频吗？', '提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'info'
+    }).then(async () => {
+        try {
+            await auditVideoStatus(video.id, { status: 1 })
+            ElMessage.success('操作成功')
+            fetchVideoList() // 刷新数据
+        } catch (error) {
+            ElMessage.error('操作失败')
+        }
+    }).catch(() => {})
 }
 
 // 拒绝视频
 const handleReject = (video) => {
-  ElMessageBox.prompt('请输入拒绝原因', '拒绝视频', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    inputPattern: /\S+/,
-    inputErrorMessage: '请输入拒绝原因'
-  }).then(async ({ value }) => {
-    try {
-      await auditVideoStatus(video.id, { status: 2 })
-      ElMessage.success('操作成功')
-      fetchVideoList() // 刷新数据
-    } catch (error) {
-      ElMessage.error('操作失败')
-    }
-  }).catch(() => {})
+    ElMessageBox.confirm('请输入拒绝原因', '拒绝视频', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(async ({ value }) => {
+        try {
+            await auditVideoStatus(video.id, { status: 2 })
+            ElMessage.success('操作成功')
+            fetchVideoList() // 刷新数据
+        } catch (error) {
+            ElMessage.error('操作失败')
+        }
+    }).catch(() => {})
 }
 
 // 删除视频
@@ -316,11 +523,26 @@ const handleDelete = (video) => {
   margin-bottom: 15px;
 }
 
+.tag-search {
+  margin-bottom: 15px;
+}
+
+.tag-search-input {
+  width: 100%;
+}
+
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  transition: max-height 0.3s ease;
+}
+
+.tag-expand-btn {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
 .tag-item {
@@ -336,7 +558,23 @@ const handleDelete = (video) => {
   transform: translateY(-2px);
 }
 
-.source-filter {
+.selected-tags {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.selected-tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.selected-tag {
+  margin-right: 5px;
+}
+
+.source-filter, .sort-filter, .sort-order-filter {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
@@ -347,33 +585,41 @@ const handleDelete = (video) => {
   font-size: 14px;
   color: #606266;
   margin-right: 10px;
+  min-width: 70px;
 }
 
-.source-items {
+.source-items, .sort-items {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.source-item {
+.source-item, .sort-item {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 6px 14px;
   border-radius: 4px;
   font-size: 14px;
   color: #606266;
   transition: all 0.2s;
+  border: 1px solid #ebeef5;
 }
 
-.source-item:hover {
+.source-item:hover, .sort-item:hover {
   color: #409EFF;
   background-color: #f0f7ff;
+  border-color: #c6e2ff;
 }
 
-.source-item.active {
+.source-item.active, .sort-item.active {
   color: #409EFF;
   background-color: #ecf5ff;
+  border-color: #b3d8ff;
+}
+
+.sort-order-icon {
+  margin-right: 4px;
 }
 
 .source-icon {

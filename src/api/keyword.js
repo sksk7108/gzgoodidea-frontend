@@ -6,7 +6,7 @@ import { get, post, del } from '@/utils/request'
  * @returns {Promise}
  */
 export function getKeywordList(params) {
-  return get('/api/keywords', params)
+  return get('/keywords', params)
 }
 
 /**
@@ -15,7 +15,7 @@ export function getKeywordList(params) {
  * @returns {Promise}
  */
 export function addKeyword(data) {
-  return post('/api/keywords', data)
+  return post('/keywords', data)
 }
 
 /**
@@ -24,5 +24,5 @@ export function addKeyword(data) {
  * @returns {Promise}
  */
 export function deleteKeyword(id) {
-  return del(`/api/keywords/${id}`)
+  return del(`/keywords/${id}`)
 }

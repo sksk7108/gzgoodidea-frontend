@@ -7,7 +7,7 @@ import { put } from '../utils/request'
  * @returns {Promise}
  */
 export function getPrompt(params) {
-  return get('/api/ai/resources/prompts', params)
+  return get('/ai/resources/prompts', params)
 }
 
 /**
@@ -16,7 +16,7 @@ export function getPrompt(params) {
  * @returns {Promise}
  */
 export function savePrompt(data) {
-  return put('/api/ai/resources/prompts', data)
+  return put('/ai/resources/prompts', data)
 }
 
 /**
@@ -25,7 +25,7 @@ export function savePrompt(data) {
  * @returns {Promise}
  */
 export function getKnowledge(params) {
-  return get('/api/ai/resources/knowledge', params)
+  return get('/ai/resources/knowledge', params)
 }
 
 /**
@@ -34,5 +34,5 @@ export function getKnowledge(params) {
  * @returns {Promise}
  */
 export function saveKnowledge(data) {
-  return put('/api/ai/resources/knowledge', data)
+  return put('/ai/resources/knowledge', data)
 }
