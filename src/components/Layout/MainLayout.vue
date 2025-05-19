@@ -22,8 +22,22 @@
         
         <!-- 用户信息和退出按钮 -->
         <div class="user-actions">
-          <span class="username">{{ userStore.username }}</span>
-          <el-button type="text" @click="handleLogout">退出登录</el-button>
+          <div class="user-info">
+            <el-avatar :size="32" class="user-avatar">
+              <svg viewBox="0 0 1024 1024" width="32" height="32">
+                <path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820c-205.4 0-372-166.6-372-372s166.6-372 372-372 372 166.6 372 372-166.6 372-372 372z" fill="#e6e6e6"></path>
+                <path d="M512 336c-63.6 0-115.2 51.6-115.2 115.2S448.4 566.4 512 566.4 627.2 514.8 627.2 451.2 575.6 336 512 336z" fill="#e6e6e6"></path>
+                <path d="M693.6 627.2c-23.4-36.5-55.3-66.8-93.6-88.1 25.7-19.5 42.4-50.4 42.4-85.3 0-59.4-48.2-107.6-107.6-107.6s-107.6 48.2-107.6 107.6c0 34.9 16.7 65.9 42.4 85.3-38.3 21.3-70.2 51.6-93.6 88.1C344.8 574.2 328 533.4 328 489.6c0-101.4 82.2-183.6 183.6-183.6s183.6 82.2 183.6 183.6c0 43.8-16.8 84.6-46.8 124.8z" fill="#e6e6e6"></path>
+                <path d="M512 704c-128 0-240-64-240-192h72c0 48 96 120 168 120s168-72 168-120h72c0 128-112 192-240 192z" fill="#e6e6e6"></path>
+              </svg>
+            </el-avatar>
+            <div class="user-details">
+              <!-- <span class="welcome-text">欢迎您</span> -->
+              <span class="username">{{ userStore.account }}</span>
+            </div>
+          </div>
+          <el-divider direction="vertical" />
+          <el-button type="text" @click="handleLogout" class="logout-button">退出登录</el-button>
         </div>
       </el-header>
       <el-main class="main-container">
@@ -106,10 +120,41 @@ const handleLogout = () => {
   margin-left: auto;
 }
 
-.username {
-  margin-right: 10px;
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  background-color: #409EFF;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
   font-size: 14px;
-  color: #606266;
+  line-height: 1.2;
+}
+
+.welcome-text {
+  color: #909399;
+  font-size: 12px;
+}
+
+.username {
+  color: #303133;
+  font-weight: 500;
+}
+
+.logout-button {
+  margin-left: 10px;
+  color: #F56C6C;
+  font-weight: 500;
+}
+
+.logout-button:hover {
+  color: #f78989;
 }
 
 .main-container {

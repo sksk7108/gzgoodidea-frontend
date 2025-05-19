@@ -7,6 +7,26 @@
           <div class="placeholder-text">暂无视频</div>
         </div>
       </template>
+      <template v-else-if="isSmallDouyinVideo">
+        <div class="video-placeholder douyin-placeholder">
+          <div class="douyin-link-container">
+            <svg class="douyin-icon" viewBox="0 0 1024 1024" width="40" height="40">
+              <path d="M937.1 423.4c-92 0-165.9-71.5-172.6-161.5h-86.2v455c0 47.8-38.8 86.5-86.5 86.5-47.8 0-86.5-38.8-86.5-86.5s38.8-86.5 86.5-86.5c9.4 0 18.8 1.6 27.5 4.7V546c-9.1-1.2-18.1-1.9-27.5-1.9-105.6 0-191.1 85.5-191.1 191.1S486.2 926.2 591.8 926.2c105.6 0 191.1-85.5 191.1-191.1V453.7c31.5 22.1 69.6 35.1 111 35.1V423.4h43.2-0.1z m0 0" fill="#ff0050"></path>
+              <path d="M778.7 423.4v65.4c-41.3 0-79.5-13-111-35.1v281.6c0 105.6-85.5 191.1-191.1 191.1-105.6 0-191.1-85.5-191.1-191.1S371.1 544 476.7 544c9.4 0 18.3 0.6 27.5 1.9v89.1c-8.7-3.1-18.1-4.7-27.5-4.7-47.8 0-86.5 38.8-86.5 86.5s38.8 86.5 86.5 86.5c47.8 0 86.5-38.8 86.5-86.5V261.9h86.2c6.8 90.1 80.6 161.5 172.6 161.5h-43.2z" fill="#000000"></path>
+            </svg>
+            <div class="douyin-info">
+              <span class="douyin-tip">访问原链接查看视频</span>
+              <a :href="video.videoUrl" target="_blank" class="douyin-original-link">
+                <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
+                  <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#ffffff" p-id="15975"></path>
+                  <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#ffffff" p-id="15976"></path>
+                </svg>
+                {{ formatUrl(video.originalLink || video.videoUrl) }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </template>
       <template v-else>
         <video 
           ref="videoRef"
@@ -62,8 +82,8 @@
             <div class="video-original-link" v-if="video.videoUrl && video.hotSource !== '视频号'">
               <a :href="video.videoUrl" target="_blank" class="source-link">
                 <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
-                  <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#409eff" p-id="15975"></path>
-                  <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#409eff" p-id="15976"></path>
+                  <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#ffffff" p-id="15975"></path>
+                  <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#ffffff" p-id="15976"></path>
                 </svg>
                 {{ formatUrl(video.originalLink) }}
               </a>
@@ -132,22 +152,6 @@
         </div>
       </div>
       <div class="video-actions">
-<!--        <el-button type="primary" size="small" @click="handleFavorite" :loading="favoriteLoading">-->
-<!--          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">-->
-<!--              <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>-->
-<!--          </svg>-->
-<!--          {{ isFavorite ? '已收藏' : '收藏' }}-->
-<!--        </el-button>-->
-<!--        <el-button type="success" size="small" @click="handleEdit">-->
-<!--          <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="16" height="16" style="margin-right: 5px;"><path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>-->
-<!--          编辑保存-->
-<!--        </el-button>-->
-<!--        <el-button type="danger" size="small" :disabled="true" @click="handleDelete">-->
-<!--          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">-->
-<!--            <path d="M352 192V112a48 48 0 0 1 48-48h224a48 48 0 0 1 48 48v80h224a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H128a16 16 0 0 1-16-16v-32a16 16 0 0 1 16-16h224z m64 0h192v-64H416v64zM192 288h640l-36.576 624.704A96 96 0 0 1 699.84 992H324.16a96 96 0 0 1-95.584-79.296L192 288z m480 143.552a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m-288 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m144 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z" fill="#f0f0f0" p-id="7121"></path>-->
-<!--          </svg>-->
-<!--          删除-->
-<!--        </el-button>-->
         <template v-if="video.auditStatus === 0">
           <el-button type="success" size="small" @click="handleApprove">通过</el-button>
           <el-button type="warning" size="small" @click="handleReject">拒绝</el-button>
@@ -282,6 +286,14 @@ const loadingTimer = ref(null)
 const loadingTimeout = ref(null)
 const isVideoVisible = ref(true)
 const observer = ref(null)
+const videoSizeInKB = ref(0)
+
+// 检测视频是否是小于200KB的抖音视频
+const isSmallDouyinVideo = computed(() => {
+  return props.video.hotSource === '抖音' &&
+         (videoSizeInKB.value > 0 && videoSizeInKB.value < 200)
+  // return true
+})
 
 // 全局视频控制
 const currentlyPlaying = inject('currentlyPlaying', { videoId: null })
@@ -295,6 +307,25 @@ const videoUrl = computed(() => {
   if (!props.video.originalVideo) return ''
   return `/api/videos/file/${props.video.originalVideo}`
 })
+
+// 获取视频文件大小
+const getVideoFileSize = async () => {
+  if (!props.video.originalVideo) return
+  
+  try {
+    const response = await fetch(videoUrl.value, { method: 'HEAD' })
+    if (response.ok) {
+      const contentLength = response.headers.get('content-length')
+      if (contentLength) {
+        // 转换为KB
+        videoSizeInKB.value = Math.round(parseInt(contentLength) / 1024)
+        console.log(`视频大小: ${videoSizeInKB.value}KB, 源: ${props.video.hotSource}`)
+      }
+    }
+  } catch (error) {
+    console.error('获取视频大小失败:', error)
+  }
+}
 
 // 获取视频MIME类型
 const getVideoMimeType = computed(() => {
@@ -630,9 +661,14 @@ onMounted(() => {
   
   // 初始化检查网络状态
   handleNetworkChange()
+
+  // 获取视频文件大小
+  if (props.video.originalVideo) {
+    getVideoFileSize()
+  }
   
   // 视频加载超时检测
-  if (props.video.originalVideo) {
+  if (props.video.originalVideo && !isSmallDouyinVideo.value) {
     loadingTimeout.value = setTimeout(() => {
       if (!videoLoaded.value && !videoError.value) {
         console.warn('视频加载超时')
@@ -644,7 +680,7 @@ onMounted(() => {
 
   // 初始化IntersectionObserver观察视频是否在可视区域内
   nextTick(() => {
-    if (videoPlayerRef.value) {
+    if (videoPlayerRef.value && !isSmallDouyinVideo.value) {
       observer.value = new IntersectionObserver(handleVisibilityChange, {
         root: null, // 使用视口作为根
         threshold: 0.3 // 当30%的视频可见时触发回调
@@ -987,6 +1023,61 @@ onUnmounted(() => {
 .placeholder-text {
   font-size: 16px;
   color: #909399;
+}
+
+/* 抖音小视频样式 */
+.douyin-placeholder {
+  background: linear-gradient(135deg, #FE2C55 0%, #25F4EE 100%);
+  align-items: center;
+  justify-content: center;
+}
+
+.douyin-link-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.douyin-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 5px;
+}
+
+.douyin-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.douyin-tip {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.douyin-original-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  background-color: rgba(254, 44, 85, 0.8);
+  padding: 8px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.douyin-original-link:hover {
+  background-color: rgba(254, 44, 85, 1);
 }
 
 .video-loading {
