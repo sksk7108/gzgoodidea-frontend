@@ -4,16 +4,16 @@
     <h2 class="page-title">我的收藏</h2>
     
     <!-- 视频列表 -->
-    <div v-loading="loading" class="video-grid-container">
-      <div v-if="videoList.length > 0" class="masonry-grid">
-        <VideoCard
+    <div v-loading="loading" class="video-list-container">
+      <div v-if="videoList.length > 0" class="video-rows">
+        <VideoCardRow
           v-for="video in videoList"
           :key="video.id"
           :video="video"
           @favorite="handleFavorite"
-          @save="handleSave"
           @delete="handleDelete"
-          class="masonry-item"
+          class="video-row-item"
+          :showEditBtn="true"
         />
       </div>
       <el-empty v-else description="暂无收藏内容" />
@@ -33,17 +33,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import VideoCard from '@/components/VideoCard.vue'
+import { ref, reactive, onMounted, computed, provide } from 'vue'
+import VideoCardRow from '@/components/VideoCardRow.vue'
 import { getVideoList, deleteVideo } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
+
+// 提供全局视频播放状态
+const currentlyPlaying = reactive({ videoId: null })
+provide('currentlyPlaying', currentlyPlaying)
 
 // 加载状态
 const loading = ref(false)
 
 // 分页数据
 const currentPage = ref(1)
-const pageSize = ref(9)
+const pageSize = ref(10) // 行式布局每页展示10条
 const total = ref(0)
 
 // 视频列表数据
@@ -62,11 +66,13 @@ const fetchFavoritesList = async () => {
     const response = await getVideoList(params)
     
     if (response && response.records) {
-      videoList.value = response.records.map(video => ({
-        ...video,
-        formattedTopic: formatTopicForHTML(video.topic),
-        isFavorite: true // 确保标记为收藏状态
-      }))
+      videoList.value = response.records.map(video => {
+        return {
+          ...video,
+          formattedTopic: formatTopicForHTML(video.topic),
+          isFavorite: true // 确保标记为收藏状态
+        }
+      })
       total.value = response.total || 0
     } else {
       videoList.value = []
@@ -104,17 +110,6 @@ const handleFavorite = (video) => {
     fetchFavoritesList()
   }
   ElMessage.success('已取消收藏')
-}
-
-// 处理视频保存
-const handleSave = (video) => {
-  // 更新本地视频列表数据
-  const index = videoList.value.findIndex(item => item.id === video.id)
-  if (index !== -1) {
-    videoList.value[index] = { ...videoList.value[index], ...video }
-    // 格式化topic
-    videoList.value[index].formattedTopic = formatTopicForHTML(video.topic)
-  }
 }
 
 // 删除视频
@@ -170,22 +165,21 @@ onMounted(() => {
   padding-left: 10px;
 }
 
-.video-grid-container {
+.video-list-container {
   width: 100%;
   overflow-x: hidden;
   min-height: 400px;
 }
 
-.masonry-grid {
-  columns: 5;
-  column-gap: 20px;
+.video-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
 }
 
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 20px;
-  min-width: 380px;
+.video-row-item {
+  width: 100%;
 }
 
 .pagination {
@@ -196,29 +190,7 @@ onMounted(() => {
   width: 100%;
 }
 
-@media screen and (max-width: 2000px) {
-  .masonry-grid {
-    columns: 4;
-  }
-}
-
-@media screen and (max-width: 1600px) {
-  .masonry-grid {
-    columns: 3;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .masonry-grid {
-    columns: 2;
-  }
-}
-
 @media screen and (max-width: 900px) {
-  .masonry-grid {
-    columns: 1;
-  }
-  
   .video-list {
     padding: 0 10px;
   }

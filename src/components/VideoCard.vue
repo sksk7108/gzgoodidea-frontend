@@ -124,145 +124,94 @@
         <div class="scripts-container">
           <div class="script-card original" @click="showScriptCompare">
             <div class="script-header">
-              <span class="label">原视频话术</span>
+              <span class="label">文案</span>
               <svg class="expand-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.5 3.5L10.5 8L6.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <p class="script-content">{{ video.originalScript }}</p>
           </div>
-          <div class="script-card modified" @click="showScriptCompare">
-            <div class="script-header">
-              <span class="label">改写后话术</span>
-              <svg class="expand-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6.5 3.5L10.5 8L6.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <p class="script-content">{{ video.editedScript }}</p>
-          </div>
         </div>
       </div>
       <div class="video-actions">
-<!--        以下注释内容暂不删除-->
-<!--        <el-button type="primary" size="small" @click="handleFavorite" :loading="favoriteLoading">
+        <el-button type="primary" size="small" @click="handleFavorite" :loading="favoriteLoading">
           <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">
               <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>
           </svg>
           {{ isFavorite ? '已收藏' : '收藏' }}
         </el-button>
-        <el-button type="success" size="small" @click="handleEdit">
+        <!-- <el-button type="danger" size="small" @click="handleDelete">删除</el-button> -->
+<!--        <el-button type="success" size="small" @click="handleEdit">
           <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="16" height="16" style="margin-right: 5px;"><path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>
           编辑保存
-        </el-button>
-        <el-button type="danger" size="small" :disabled="true" @click="handleDelete">
-          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">
-            <path d="M352 192V112a48 48 0 0 1 48-48h224a48 48 0 0 1 48 48v80h224a16 16 0 0 1 16 16v32a16 16 0 0 1-16 16H128a16 16 0 0 1-16-16v-32a16 16 0 0 1 16-16h224z m64 0h192v-64H416v64zM192 288h640l-36.576 624.704A96 96 0 0 1 699.84 992H324.16a96 96 0 0 1-95.584-79.296L192 288z m480 143.552a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m-288 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z m144 0a16 16 0 0 0-16 16v416a16 16 0 0 0 16 16h32a16 16 0 0 0 16-16v-416a16 16 0 0 0-16-16h-32z" fill="#f0f0f0" p-id="7121"></path>
-          </svg>
-          删除
         </el-button>-->
 
-         <template v-if="video.auditStatus === 0">
-          <el-button type="success" size="small" @click="handleApprove">通过</el-button>
-          <el-button type="warning" size="small" @click="handleReject">拒绝</el-button>
-        </template>
-        <template v-else-if="video.auditStatus === 1">
-          <el-tag type="success" size="medium">已通过</el-tag>
-<!--          <el-button type="danger" size="small" @click="handleDelete">删除</el-button>-->
-        </template>
-        <template v-else-if="video.auditStatus === 2">
-          <el-tag type="danger" size="medium">已拒绝</el-tag>
-<!--          <el-button type="danger" size="small" @click="handleDelete">删除</el-button>-->
-        </template>
       </div>
     </div>
 
-    <!-- 话术对比弹窗 -->
+    <!-- 话术弹窗 -->
     <el-dialog
       v-model="compareDialogVisible"
       width="95%"
       fullscreen
       append-to-body
-      :show-close="false"
+      :lock-scroll="false"
+      :show-close="true"
       :close-on-click-modal="true"
       :close-on-press-escape="true"
-      class="script-compare-dialog"
-      header-class="script-compare-header1"
+      class="script-dialog"
+      top="5vh"
+      destroy-on-close
     >
-      <div class="script-compare-container">
-        <div class="script-compare-header">
+      <template #header>
+        <div class="script-dialog-header">
           <div class="script-header-title">
-            <h2>{{ video.title }}</h2>
-            <p class="script-header-info">来源: {{ video.hotSource }} | 发布时间: {{ video.importTime }}</p>
+            <span style="min-width: 48px;">标题：</span>
+            <template v-if="isEditing">
+              <el-input 
+                v-model="editForm.title" 
+                placeholder="请输入标题"
+                class="edit-title-input"
+              ></el-input>
+            </template>
+            <template v-else>
+              <h2>{{ video.title }}</h2>
+            </template>
           </div>
-          <el-button type="primary" plain @click="compareDialogVisible = false">关闭</el-button>
         </div>
-        <div class="script-compare-content">
-          <div class="script-column original-script">
-            <div class="script-column-header">
-              <h3>原视频话术</h3>
-            </div>
-            <div class="script-column-content">
-              <pre>{{ video.originalScript || '暂无内容' }}</pre>
-            </div>
-          </div>
-          <div class="script-column edited-script">
-            <div class="script-column-header">
-              <h3>改写后话术</h3>
-            </div>
-            <div class="script-column-content">
-              <pre>{{ video.editedScript || '暂无内容' }}</pre>
-            </div>
-          </div>
+      </template>
+      
+      <div class="script-content-container">
+        <div class="script-label">
+          <span>文案：</span>
+        </div>
+        <div class="script-content-wrapper">
+          <template v-if="isEditing">
+            <el-input 
+              type="textarea" 
+              v-model="editForm.originalScript" 
+              placeholder="请输入文案"
+              :rows="16"
+              class="edit-script-textarea"
+              resize="none"
+            ></el-input>
+          </template>
+          <template v-else>
+            <div class="script-text">{{ video.originalScript || '暂无内容' }}</div>
+          </template>
         </div>
       </div>
-    </el-dialog>
-
-    <!-- 编辑弹窗 -->
-    <el-dialog
-      v-model="editDialogVisible"
-      title="编辑视频信息"
-      width="50%"
-      :before-close="closeEditDialog"
-      append-to-body
-    >
-      <el-form :model="editForm" label-width="120px" ref="editFormRef">
-        <el-form-item label="视频标题" prop="title" :rules="[{ required: true, message: '请输入标题', trigger: 'blur' }]">
-          <el-input v-model="editForm.title" placeholder="请输入标题"></el-input>
-        </el-form-item>
-        
-        <el-form-item label="标签" prop="topic">
-          <el-input 
-            type="textarea" 
-            v-model="editForm.topic" 
-            placeholder="请输入标签，多个标签使用#分隔，例如：#美妆#时尚"
-            :rows="2"
-          ></el-input>
-          <div class="form-tips">格式说明：多个标签使用#分隔，例如：#美妆#时尚</div>
-        </el-form-item>
-        
-        <el-form-item label="关键词" prop="keywords">
-          <el-input 
-            type="textarea" 
-            v-model="editForm.keywords" 
-            placeholder="请输入关键词，多个关键词使用逗号分隔"
-            :rows="2"
-          ></el-input>
-          <div class="form-tips">格式说明：多个关键词使用逗号分隔，例如：彩妆,护肤,保养</div>
-        </el-form-item>
-        
-        <el-form-item label="改写后话术" prop="editedScript" :rules="[{ required: true, message: '请输入改写后话术', trigger: 'blur' }]">
-          <el-input 
-            type="textarea" 
-            v-model="editForm.editedScript" 
-            placeholder="请输入改写后话术"
-            :rows="8"
-          ></el-input>
-        </el-form-item>
-      </el-form>
+      
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="closeEditDialog">取消</el-button>
-          <el-button type="primary" @click="saveEdits" :loading="saveLoading">保存</el-button>
+          <template v-if="isEditing">
+            <el-button type="primary" :loading="saveLoading" @click="saveEdits">保存</el-button>
+            <el-button @click="cancelEdit">取消</el-button>
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="startEdit">编辑</el-button>
+            <el-button @click="compareDialogVisible = false">关闭</el-button>
+          </template>
         </div>
       </template>
     </el-dialog>
@@ -272,7 +221,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, inject, nextTick } from 'vue'
 // import { Loading, VideoPlay, Connection, RefreshRight } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { toggleVideoFavorite, saveVideoInfo } from '@/api/video'
 
 // 定义props
@@ -299,8 +248,8 @@ const videoSizeInKB = ref(0)
 
 // 检测视频是否是小于200KB的抖音视频
 const isSmallDouyinVideo = computed(() => {
-  return props.video.hotSource === '抖音' &&
-         (videoSizeInKB.value > 0 && videoSizeInKB.value < 20)
+  return props.video.hotSource === '抖音' 
+  // &&(videoSizeInKB.value > 0 && videoSizeInKB.value < 20)
   // return true
 })
 
@@ -516,113 +465,112 @@ const retryVideo = () => {
 // 收藏和编辑状态
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)
-const editDialogVisible = ref(false)
+const compareDialogVisible = ref(false)
+const isEditing = ref(false)
 const saveLoading = ref(false)
-const editFormRef = ref(null)
 const editForm = ref({
   title: '',
-  topic: '',
-  keywords: '',
-  editedScript: ''
+  originalScript: ''
 })
-
-// 话术对比弹窗
-const compareDialogVisible = ref(false)
 
 // 打开话术对比弹窗
 const showScriptCompare = () => {
   compareDialogVisible.value = true
+  isEditing.value = false
+}
+
+// 开始编辑
+const startEdit = () => {
+  editForm.value = {
+    title: props.video.title || '',
+    originalScript: props.video.originalScript || ''
+  }
+  isEditing.value = true
+}
+
+// 取消编辑
+const cancelEdit = () => {
+  isEditing.value = false
+}
+
+// 保存编辑
+const saveEdits = async () => {
+  ElMessage.warning('保存功能暂未开放')
+  return
+  if (!editForm.value.title.trim()) {
+    ElMessage.warning('标题不能为空')
+    return
+  }
+  
+  saveLoading.value = true
+  try {
+    // 构建保存的数据
+    const saveData = {
+      id: props.video.id,
+      title: editForm.value.title,
+      originalScript: editForm.value.originalScript
+    }
+    
+    // 调用接口保存编辑
+    await saveVideoInfo(saveData)
+    
+    // 通知父组件更新
+    emit('save', {
+      ...props.video,
+      title: editForm.value.title,
+      originalScript: editForm.value.originalScript
+    })
+    
+    ElMessage.success('保存成功')
+    isEditing.value = false
+  } catch (error) {
+    console.error('保存失败:', error)
+    ElMessage.error('保存失败，请重试')
+  } finally {
+    saveLoading.value = false
+  }
 }
 
 const getFileExtension = (filename) => {
-    if (!filename || typeof filename !== 'string') return ''
-    const lastDotIndex = filename.lastIndexOf('.')
-    return lastDotIndex === -1 ? '' : filename.slice(lastDotIndex + 1).toLowerCase()
+  if (!filename || typeof filename !== 'string') return ''
+  const lastDotIndex = filename.lastIndexOf('.')
+  return lastDotIndex === -1 ? '' : filename.slice(lastDotIndex + 1).toLowerCase()
 }
 
 // 定义事件
-const emit = defineEmits(['favorite', 'save', 'delete'])
+const emit = defineEmits(['favorite', 'save', 'delete', 'approve', 'reject'])
 
-// 处理操作事件
-// const handleFavorite = async () => {
-//   favoriteLoading.value = true
-//   try {
-//     await toggleVideoFavorite(props.video.id, !isFavorite.value)
-//     isFavorite.value = !isFavorite.value
-//
-//     // 更新本地存储状态
-//     localStorage.setItem(`favorite_${props.video.id}`, isFavorite.value)
-//
-//     // 触发事件通知父组件
-//     emit('favorite', { ...props.video, isFavorite: isFavorite.value })
-//
-//     ElMessage.success(isFavorite.value ? '收藏成功' : '已取消收藏')
-//   } catch (error) {
-//     console.error('收藏操作失败:', error)
-//     ElMessage.error('操作失败，请重试')
-//   } finally {
-//     favoriteLoading.value = false
-//   }
-// }
+// 处理收藏事件
+const handleFavorite = async () => {
 
+  ElMessage.warning('收藏功能暂未开放')
+  return
+  favoriteLoading.value = true
+  try {
+    await toggleVideoFavorite(props.video.id, !isFavorite.value)
+    isFavorite.value = !isFavorite.value
+
+    // 更新本地存储状态
+    localStorage.setItem(`favorite_${props.video.id}`, isFavorite.value)
+
+    // 触发事件通知父组件
+    emit('favorite', { ...props.video, isFavorite: isFavorite.value })
+
+    ElMessage.success(isFavorite.value ? '收藏成功' : '已取消收藏')
+  } catch (error) {
+    console.error('收藏操作失败:', error)
+    ElMessage.error('操作失败，请重试')
+  } finally {
+    favoriteLoading.value = false
+  }
+}
+
+// 处理编辑按钮点击事件
 const handleEdit = () => {
-  editForm.value = {
-    title: props.video.title,
-    topic: props.video.topic || '',
-    keywords: props.video.keywords || '',
-    editedScript: props.video.editedScript || ''
-  }
-  editDialogVisible.value = true
+  showScriptCompare()
 }
 
-const closeEditDialog = () => {
-  editDialogVisible.value = false
-  if (editFormRef.value) {
-    editFormRef.value.resetFields()
-  }
-}
-
-const saveEdits = async () => {
-  if (!editFormRef.value) return
-  
-  await editFormRef.value.validate(async (valid) => {
-    if (valid) {
-      saveLoading.value = true
-      try {
-        // 构建保存的数据
-        const saveData = {
-          id: props.video.id,
-          title: editForm.value.title,
-          topic: editForm.value.topic,
-          keywords: editForm.value.keywords,
-          editedScript: editForm.value.editedScript
-        }
-        
-        // 调用接口保存编辑
-        await saveVideoInfo(saveData)
-        
-        // 通知父组件更新
-        emit('save', {
-          ...props.video,
-          title: editForm.value.title,
-          topic: editForm.value.topic,
-          keywords: editForm.value.keywords,
-          editedScript: editForm.value.editedScript
-        })
-        
-        ElMessage.success('保存成功')
-        editDialogVisible.value = false
-      } catch (error) {
-        console.error('保存失败:', error)
-        ElMessage.error('保存失败，请重试')
-      } finally {
-        saveLoading.value = false
-      }
-    }
-  })
-}
-
-// 定义事件
+// 定义审批和删除事件处理函数
 const handleDelete = () => emit('delete', props.video)
 const handleApprove = () => emit('approve', props.video)
 const handleReject = () => emit('reject', props.video)
@@ -672,9 +620,9 @@ onMounted(() => {
   handleNetworkChange()
 
   // 获取视频文件大小
-  if (props.video.originalVideo) {
-    getVideoFileSize()
-  }
+  // if (props.video.originalVideo) {
+  //   getVideoFileSize()
+  // }
   
   // 视频加载超时检测
   if (props.video.originalVideo && !isSmallDouyinVideo.value) {
@@ -745,7 +693,8 @@ onUnmounted(() => {
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    background-color: #2d2d2d;
+    /* object-fit: cover; */
   }
 }
 
@@ -894,7 +843,7 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
 }
 
@@ -912,105 +861,110 @@ onUnmounted(() => {
 }
 
 /* 话术对比弹窗样式 */
-
-.script-compare-dialog :deep(.el-dialog__body) {
-  padding: 0;
-  height: 100%;
+.script-dialog :deep(.el-dialog__body) {
+  padding: 0 20px;
 }
 
-.script-compare-container {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f7f8fa;
+.script-dialog :deep(.el-dialog__header) {
+  padding: 15px 20px;
+  margin-right: 0;
+  border-bottom: 1px solid #ebeef5;
 }
 
-.script-compare-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+.script-dialog :deep(.el-dialog__footer) {
+  padding: 10px 20px 15px;
+  border-top: 1px solid #ebeef5;
+}
+
+.script-dialog-header {
+  width: 100%;
+  padding: 10px 20px;
 }
 
 .script-header-title {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  flex-direction: row;
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 10px;
 }
 
 .script-header-title h2 {
   margin: 0;
   font-size: 20px;
   line-height: 1.4;
+  color: #303133;
+  font-weight: 600;
+  min-width: 100px;
+  padding: 1px 10px;
 }
 
-.script-header-info {
-  margin: 0;
-  color: #909399;
-  font-size: 14px;
+.script-header-title span {
+  font-weight: 600;
+  color: #303133;
+  font-size: 15px;
 }
 
-.script-compare-content {
-  display: flex;
-  flex: 1;
-  padding: 24px 0;
-  gap: 24px;
-  height: calc(100vh - 100px);
-  overflow: hidden;
-}
-
-.script-column {
-  flex: 1;
+.script-content-container {
+  padding: 15px 20px;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  gap: 10px;
 }
 
-.script-column-header {
-  padding: 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #ebeef5;
-}
-
-.script-column-header h3 {
-  margin: 0;
-  font-size: 18px;
+.script-label {
+  font-weight: 600;
   color: #303133;
+  font-size: 15px;
+  margin-bottom: 5px;
 }
 
-.script-column-content {
-  flex: 1;
-  padding: 20px;
+.script-content-wrapper {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #ebeef5;
+  padding: 0;
+  overflow: hidden;
+  max-height: 510px;
+}
+
+.script-text {
+  padding: 12px 15px;
+  color: #606266;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  max-height: 520px;
   overflow-y: auto;
 }
 
-.script-column-content pre {
-  white-space: pre-wrap;
-  font-family: inherit;
-  font-size: 16px;
-  line-height: 1.8;
-  color: #606266;
-  margin: 0;
+.edit-title-input {
+  width: 100%;
+  margin-bottom: 5px;
 }
 
-.original-script .script-column-header {
-  background-color: #f2f6fc;
+.edit-title-input :deep(.el-input__inner) {
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.edited-script .script-column-header {
-  background-color: #f0f9eb;
+.edit-script-textarea {
+  width: 100%;
 }
 
-.edited-script .script-column-header h3 {
-  color: #67c23a;
+.edit-script-textarea :deep(.el-textarea__inner) {
+  border: none;
+  border-radius: 0;
+  background-color: #f8f9fa;
+  font-size: 14px;
+  line-height: 1.7;
+  padding: 12px 15px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
 /* 添加新样式 */
@@ -1143,4 +1097,32 @@ onUnmounted(() => {
   line-height: 1.4;
   margin-top: 5px;
 }
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-title-input {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.edit-title-input :deep(.el-input__inner) {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.edit-script-textarea {
+  width: 100%;
+  height: 100%;
+}
+
+.edit-script-textarea :deep(.el-textarea__inner) {
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 400px;
+}
+
 </style> 

@@ -2,7 +2,7 @@
   <div class="keyword-list-container">
     <!-- 操作栏 -->
     <div class="operation-bar">
-      <el-button :disabled="true" type="primary" @click="openAddDialog">
+      <el-button type="primary" @click="openAddDialog">
         <img src="@/assets/img/add.svg" style="width: 16px; height: 16px; margin-right: 5px;" />新增关键词
       </el-button>
       
@@ -25,30 +25,30 @@
       <el-table
         v-loading="loading"
         :data="keywordList"
-        border
         style="width: 100%"
         row-key="id"
       >
-        <el-table-column prop="content" label="关键词" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="type" label="类型" width="120">
+        <el-table-column fixed prop="content" label="关键词" min-width="130" show-overflow-tooltip />
+        <!-- <el-table-column prop="type" label="类型" width="120">
           <template #default="scope">
             <el-tag :type="getTypeTagType(scope.row.type)">{{ scope.row.type }}</el-tag>
           </template>
-        </el-table-column>
-        <el-table-column prop="userId" label="创建用户" width="120" show-overflow-tooltip />
+        </el-table-column> -->
+        <!-- <el-table-column prop="userId" label="创建用户" width="120" show-overflow-tooltip /> -->
         <el-table-column prop="expiryDays" label="查询时效(天)" width="120" align="center" />
-        <el-table-column prop="count" label="出现次数" width="100" align="center" />
+        <!-- <el-table-column prop="count" label="出现次数" width="100" align="center" /> -->
         <el-table-column prop="likeCount" label="点赞数" width="100" align="center" />
         <el-table-column prop="commentCount" label="评论数" width="100" align="center" />
         <el-table-column prop="favoriteCount" label="收藏数" width="100" align="center" />
         <el-table-column prop="shareCount" label="分享数" width="100" align="center" />
-        <el-table-column prop="createTime" label="创建时间" width="180" show-overflow-tooltip>
+        <el-table-column prop="createTime" label="创建时间" min-width="160" show-overflow-tooltip>
           <template #default="scope">
             {{ formatDate(scope.row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right">
+        <el-table-column label="操作" width="180" fixed="right">
           <template #default="scope">
+            <el-button type="primary" size="small" @click="openEditDialog(scope.row)">编辑</el-button>
             <el-popconfirm
               title="确定删除此关键词吗？"
               @confirm="handleDelete(scope.row)"
@@ -79,8 +79,9 @@
     <!-- 新增关键词对话框 -->
     <el-dialog
       v-model="dialogVisible"
-      title="新增关键词"
+      :title="isEdit ? '编辑关键词' : '新增关键词'"
       width="500px"
+      :lock-scroll="false"
       :close-on-click-modal="false"
     >
       <el-form
@@ -92,6 +93,26 @@
         <el-form-item label="关键词" prop="content">
           <el-input v-model="keywordForm.content" placeholder="请输入关键词" />
         </el-form-item>
+        <el-form-item label="查询时效" prop="expiryDays">
+          <el-input-number
+            v-model="keywordForm.expiryDays"
+            :min="1"
+            :max="365"
+            placeholder="天数"
+          />
+        </el-form-item>
+        <el-form-item label="点赞数" type="number" prop="likeCount">
+          <el-input-number v-model="keywordForm.likeCount" :min="0" :step="5" :max="1000000" />
+        </el-form-item>
+        <el-form-item label="评论数" type="number" prop="commentCount">
+          <el-input-number v-model="keywordForm.commentCount" :min="0" :step="5" :max="1000000" />
+        </el-form-item>
+        <el-form-item label="收藏数" type="number" prop="favoriteCount">
+          <el-input-number v-model="keywordForm.favoriteCount" :min="0" :step="5" :max="1000000" />
+        </el-form-item>
+        <el-form-item label="分享数" type="number" prop="shareCount">
+          <el-input-number v-model="keywordForm.shareCount" :min="0" :step="5" :max="1000000" />
+        </el-form-item>
         <!-- <el-form-item label="类型" prop="type">
           <el-select v-model="keywordForm.type" placeholder="请选择类型" style="width: 100%">
             <el-option
@@ -102,15 +123,6 @@
             />
           </el-select>
         </el-form-item> -->
-        <el-form-item label="查询时效" prop="expiryDays">
-          <el-input-number
-            v-model="keywordForm.expiryDays"
-            :min="1"
-            :max="365"
-            placeholder="天数"
-            style="width: 100%"
-          />
-        </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
@@ -128,7 +140,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 // import { Plus } from '@element-plus/icons-vue'
-import { getKeywordList, addKeyword, deleteKeyword, getKeywordGroupsList } from '@/api/keyword'
+import { getKeywordList, addKeyword, deleteKeyword, updateKeyword, getKeywordGroupsList } from '@/api/keyword'
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -139,10 +151,15 @@ const submitLoading = ref(false)
 
 // 关键词表单对话框
 const dialogVisible = ref(false)
+const isEdit = ref(false)
 const keywordFormRef = ref(null)
 const keywordForm = reactive({
+  id: '',
   content: '',
-  type: '系统',
+  likeCount: 0,
+  commentCount: 0,
+  favoriteCount: 0,
+  shareCount: 0,
   expiryDays: 5
 })
 
@@ -152,8 +169,24 @@ const keywordRules = {
     { required: true, message: '请输入关键词', trigger: 'blur' },
     { min: 1, max: 20, message: '长度在 1 到 20 个字符', trigger: 'blur' }
   ],
+  likeCount: [
+    { required: false, message: '请输入点赞数阈值', trigger: 'blur' },
+    { type: 'number', min: 0, max: 1000000, message: '点赞数在 0 到 1000000 之间', trigger: 'blur' }
+  ],
+  commentCount: [
+    { required: false, message: '请输入评论数阈值', trigger: 'blur' },
+    { type: 'number', min: 0, max: 1000000, message: '评论数在 0 到 1000000 之间', trigger: 'blur' }
+  ],
+  favoriteCount: [
+    { required: false, message: '请输入收藏数阈值', trigger: 'blur' },
+    { type: 'number', min: 0, max: 1000000, message: '收藏数在 0 到 1000000 之间', trigger: 'blur' }
+  ],
+  shareCount: [
+    { required: false, message: '请输入分享数阈值', trigger: 'blur' },
+    { type: 'number', min: 0, max: 1000000, message: '分享数在 0 到 1000000 之间', trigger: 'blur' }
+  ],
   expiryDays: [
-    { required: true, message: '请输入查询时效', trigger: 'blur' },
+    { required: true, message: '请输入查询时效(天)', trigger: 'blur' },
     { type: 'number', min: 1, max: 30, message: '时效天数在 1 到 30 之间', trigger: 'blur' }
   ]
 }
@@ -246,16 +279,31 @@ const handleCurrentChange = (page) => {
 
 // 打开新增对话框
 const openAddDialog = () => {
+  isEdit.value = false
+  keywordForm.id = ''
   keywordForm.content = ''
-  keywordForm.expiryDays = 5
+  keywordForm.likeCount = 0
+  keywordForm.commentCount = 0
+  keywordForm.favoriteCount = 0
+  keywordForm.shareCount = 0
+  keywordForm.expiryDays = 3
   dialogVisible.value = true
-  // 延迟重置表单验证状态
-  setTimeout(() => {
-    keywordFormRef.value?.resetFields()
-  }, 0)
 }
 
-// 提交新增关键词
+// 打开编辑对话框
+const openEditDialog = (row) => {
+  isEdit.value = true
+  keywordForm.id = row.id
+  keywordForm.content = row.content
+  keywordForm.likeCount = row.likeCount
+  keywordForm.commentCount = row.commentCount
+  keywordForm.favoriteCount = row.favoriteCount
+  keywordForm.shareCount = row.shareCount
+  keywordForm.expiryDays = row.expiryDays
+  dialogVisible.value = true
+}
+
+// 提交关键词（新增或编辑）
 const submitKeyword = () => {
   if (!keywordFormRef.value) return
   
@@ -263,15 +311,21 @@ const submitKeyword = () => {
     if (!valid) return
     
     submitLoading.value = true
-    addKeyword(keywordForm)
+    
+    // 根据isEdit判断是新增还是编辑
+    const request = isEdit.value
+      ? updateKeyword(keywordForm)
+      : addKeyword(keywordForm)
+    
+    request
       .then(() => {
-        ElMessage.success('新增关键词成功')
+        ElMessage.success(isEdit.value ? '编辑关键词成功' : '新增关键词成功')
         dialogVisible.value = false
         fetchKeywordList() // 刷新数据
       })
       .catch((error) => {
-        console.error('新增关键词失败', error)
-        ElMessage.error('新增关键词失败')
+        console.error(isEdit.value ? '编辑关键词失败' : '新增关键词失败', error)
+        ElMessage.error(isEdit.value ? '编辑关键词失败' : '新增关键词失败')
       })
       .finally(() => {
         submitLoading.value = false

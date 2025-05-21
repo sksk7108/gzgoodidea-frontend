@@ -87,6 +87,22 @@
         </div>
       </div>
       
+      <!-- 时间筛选 -->
+      <div class="time-filter">
+        <div class="source-label">时间范围：</div>
+        <div class="time-items">
+          <div 
+            v-for="timeOption in timeOptions" 
+            :key="timeOption.value"
+            class="time-item"
+            :class="{ 'active': filterForm.timeRange === timeOption.value }"
+            @click="selectTimeRange(timeOption.value)"
+          >
+            <span>{{ timeOption.label }}</span>
+          </div>
+        </div>
+      </div>
+      
       <!-- 排序功能 -->
       <div class="sort-filter">
         <div class="source-label">排序方式：</div>
@@ -100,23 +116,6 @@
           >
             <span>{{ sortOption.label }}</span>
           </div>
-        </div>
-      </div>
-      
-      <!-- 排序顺序选择 -->
-      <div class="sort-order-filter" v-if="filterForm.sortBy">
-        <div class="source-label">排序顺序：</div>
-        <div class="sort-order-options">
-          <el-radio-group v-model="filterForm.sortOrder" @change="handleSortOrderChange">
-            <el-radio-button label="desc">
-              <el-icon class="sort-order-icon"><ArrowDown /></el-icon>
-              降序
-            </el-radio-button>
-            <el-radio-button label="asc">
-              <el-icon class="sort-order-icon"><ArrowUp /></el-icon>
-              升序
-            </el-radio-button>
-          </el-radio-group>
         </div>
       </div>
     </el-card>
@@ -181,7 +180,8 @@ const maxTagsToShow = 30 // 未展开时最多显示的标签数量
 const filterForm = reactive({
   source: '',
   sortBy: '',
-  sortOrder: 'desc' // 默认降序排序
+  sortOrder: 'desc', // 默认降序排序
+  timeRange: '' // 时间范围筛选
 })
 
 // 标签选项
@@ -211,6 +211,30 @@ const toggleTagExpand = () => {
   isTagExpanded.value = !isTagExpanded.value
 }
 
+// 时间筛选选项
+const timeOptions = [
+  {
+    label: '全部时间',
+    value: '',
+  },
+  {
+    label: '一天内',
+    value: '1',
+  },
+  {
+    label: '七天内',
+    value: '7',
+  },
+  {
+    label: '一个月内',
+    value: '30',
+  },
+  {
+    label: '半年内',
+    value: '180',
+  }
+]
+
 // 排序选项
 const sortOptions = [
   {
@@ -234,11 +258,6 @@ const sortOptions = [
     value: 'favoriteCount'
   }
 ]
-
-// 处理排序顺序改变
-const handleSortOrderChange = () => {
-  fetchVideoList()
-}
 
 // 分页数据
 const currentPage = ref(1)
@@ -297,7 +316,8 @@ const fetchVideoList = async () => {
       keywords: selectedTags.value.join(','), // 用逗号连接多个标签
       hotSource: filterForm.source,
       sortBy: filterForm.sortBy, // 排序字段
-      sortOrder: filterForm.sortOrder // 排序顺序
+      sortOrder: filterForm.sortOrder, // 排序顺序
+      timeRange: filterForm.timeRange // 时间范围筛选
     }
     
     console.log('请求参数:', params)
@@ -401,6 +421,13 @@ const selectSource = (sourceValue) => {
   fetchVideoList()
 }
 
+// 选择时间范围
+const selectTimeRange = (timeValue) => {
+  filterForm.timeRange = timeValue
+  currentPage.value = 1
+  fetchVideoList()
+}
+
 // 选择排序方式
 const selectSortOption = (sortValue) => {
   // 如果点击已选中的排序方式，则清除排序
@@ -408,8 +435,6 @@ const selectSortOption = (sortValue) => {
     filterForm.sortBy = ''
   } else {
     filterForm.sortBy = sortValue
-    // 默认降序
-    filterForm.sortOrder = 'desc'
   }
   currentPage.value = 1
   fetchVideoList()
@@ -420,6 +445,7 @@ const resetFilter = () => {
   selectedTags.value = []
   tagSearchKeyword.value = ''
   filterForm.source = ''
+  filterForm.timeRange = ''
   filterForm.sortBy = 'createTime'
   filterForm.sortOrder = 'desc'
   isTagExpanded.value = false
@@ -578,7 +604,7 @@ const handleDelete = (video) => {
   margin-right: 5px;
 }
 
-.source-filter, .sort-filter, .sort-order-filter {
+.source-filter, .sort-filter, .time-filter {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
@@ -592,13 +618,13 @@ const handleDelete = (video) => {
   min-width: 70px;
 }
 
-.source-items, .sort-items {
+.source-items, .sort-items, .time-items {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.source-item, .sort-item {
+.source-item, .sort-item, .time-item {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -610,20 +636,16 @@ const handleDelete = (video) => {
   border: 1px solid #ebeef5;
 }
 
-.source-item:hover, .sort-item:hover {
+.source-item:hover, .sort-item:hover, .time-item:hover {
   color: #409EFF;
   background-color: #f0f7ff;
   border-color: #c6e2ff;
 }
 
-.source-item.active, .sort-item.active {
+.source-item.active, .sort-item.active, .time-item.active {
   color: #409EFF;
   background-color: #ecf5ff;
   border-color: #b3d8ff;
-}
-
-.sort-order-icon {
-  margin-right: 4px;
 }
 
 .source-icon {

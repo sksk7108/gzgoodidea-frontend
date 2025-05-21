@@ -1,5 +1,9 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { removeToken } from "@/utils/auth.js";
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // 创建 axios 实例
 const service = axios.create({
@@ -44,16 +48,24 @@ service.interceptors.response.use(
     // 后端可能有不同的数据格式，需要适配
     // 情况1: { code: 200, data: {}, message: '' }
     if (res.code !== undefined) {
+      if (res.code === 410){
+        ElMessage.error(res.msg)
+        return Promise.reject(new Error(res.msg))
+      }
       if (res.code !== 200) {
         ElMessage.error(res.msg || '服务器响应异常')
+        if (res.msg && res.msg === '请先登录'){
+          removeToken()
+          router.push('/login')
+          return
+        }
         
         // 处理特定错误码
         if (res.code === 401) {
           // token 过期或未登录
-          localStorage.removeItem('token')
-          sessionStorage.removeItem('token')
-
+          removeToken()
           // 跳转到登录页
+          router.push('/login')
           return
         }
         
@@ -80,11 +92,8 @@ service.interceptors.response.use(
         case 401:
           message = '未授权，请重新登录'
           // 清除 token 并跳转登录页
-          localStorage.removeItem('token')
-          localStorage.removeItem('isAdmin')
-          setTimeout(() => {
-            window.location.href = '/login'
-          }, 1500)
+          removeToken()
+          router.push('/login')
           break
         case 403:
           message = '拒绝访问'
@@ -115,7 +124,7 @@ service.interceptors.response.use(
       }
     }
     
-    ElMessage.error(message)
+    // ElMessage.error(message)
     return Promise.reject(error)
   }
 )

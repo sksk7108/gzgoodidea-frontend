@@ -1,4 +1,4 @@
-import { get, post, del } from '@/utils/request'
+import { get, post, del, put } from '@/utils/request'
 
 /**
  * 获取关键词列表
@@ -33,5 +33,14 @@ export function addKeyword(data) {
  * @returns {Promise}
  */
 export function deleteKeyword(id) {
-  return del(`/keywords/${id}`)
+  return del(`/employee/keyword/${id}`)
+}
+
+/**
+ * 更新关键词
+ * @param {Object} data - 关键词数据
+ * @returns {Promise}
+ */
+export function updateKeyword(data) {
+  return put(`/employee/keyword`, data)
 }

@@ -14,9 +14,9 @@
           class="menu"
         >
           <el-menu-item index="/videos">视频列表</el-menu-item>
-          <el-menu-item index="/keywords">关键词列表</el-menu-item>
-           <el-menu-item index="/favorites">我的收藏</el-menu-item>
-          <el-menu-item index="/saved">保存的文案</el-menu-item>
+          <el-menu-item index="/favorites">我的收藏</el-menu-item>
+          <el-menu-item index="/keywords">我的关键词</el-menu-item>
+<!--          <el-menu-item index="/saved">我的文案</el-menu-item>-->
           <!-- 隐藏AI话术配置 -->
           <!-- <el-menu-item index="/ai-config">AI话术配置</el-menu-item> -->
         </el-menu>
@@ -119,7 +119,7 @@ const handleLogout = () => {
 .menu {
   min-width: 200px;
   overflow: scroll;
-  transition: all 0.3s ease;
+  transition: all 0.3s linear;
 }
 
 .menu::-webkit-scrollbar{
@@ -207,10 +207,12 @@ const handleLogout = () => {
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
   }
 }
+@media screen and (max-width: 700px){
+    .logo {
+        display: none;
+    }
+}
 @media screen and (max-width: 600px) {
-  .logo {
-    display: none;
-  }
   .username {
     display: none;
   }
