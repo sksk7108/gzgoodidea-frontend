@@ -44,7 +44,20 @@
           </div>
         </template>
         <template v-else>
+          <div v-if="!shouldLoadVideo" class="video-placeholder lazy-load-placeholder" @click="shouldLoadVideo = true">
+            <div class="lazy-load-container">
+              <svg t="1747032341381" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12951" width="48" height="48">
+                <path d="M239.056896 261.30432 120.561664 261.30432c-27.394048 0-49.60256 22.208512-49.60256 49.60256L70.959104 738.03776c0 27.396096 22.208512 49.60256 49.60256 49.60256l118.495232 0L239.056896 261.30432z" fill="#e6e6e6" p-id="12952"></path>
+                <path d="M249.296896 261.30432l0 526.336L751.616 787.64032l0-526.336L249.296896 261.30432zM425.263104 643.508224l0.210944-238.073856 150.962176 119.216128L425.263104 643.508224z" fill="#e6e6e6" p-id="12953"></path>
+                <path d="M761.856 261.30432l118.493184 0c27.396096 0 49.604608 22.208512 49.604608 49.60256L929.953792 738.03776c0 27.396096-22.208512 49.60256-49.604608 49.60256L761.856 787.64032 761.856 261.30432z" fill="#e6e6e6" p-id="12954"></path>
+              </svg>
+              <div class="lazy-load-text">
+                <span>点击加载视频</span>
+              </div>
+            </div>
+          </div>
           <video 
+            v-if="shouldLoadVideo"
             ref="videoRef"
             controls
             preload="metadata" 
@@ -57,8 +70,8 @@
             @play="handleVideoPlay"
             @pause="handleVideoPause"
             v-show="videoLoaded && !videoError"
+            :src="videoUrl"
           >
-            <source :src="videoUrl" :type="getVideoMimeType">
             您的浏览器不支持视频播放
           </video>
           <div v-if="videoError" class="video-error">
@@ -68,7 +81,7 @@
             </div>
           </div>
           <!-- 加载中状态 -->
-          <div v-if="!videoLoaded && !videoError" class="video-loading">
+          <div v-if="shouldLoadVideo && !videoLoaded && !videoError" class="video-loading">
             <el-icon class="loading-icon"><Loading /></el-icon>
             <span>视频加载中... {{ loadingStatus }}</span>
           </div>
@@ -163,17 +176,18 @@
 
       <!-- 操作区域 -->
       <div class="video-actions">
-        <el-button type="primary" size="small" @click="handleFavorite" :loading="favoriteLoading">
+        <el-button type="primary" size="default" @click="handleFavorite" :loading="favoriteLoading">
           <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">
-            <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>
+            <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="video.isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>
           </svg>
-          {{ isFavorite ? '已收藏' : '收藏' }}
+          {{ video.isFavorite ? '已收藏' : '收藏' }}
         </el-button>
-       <el-button type="success" size="small" style="margin: 0;" @click="compareDialogVisible = true">
+       <el-button type="success" size="default" v-if="showEditBtn" style="margin: 0;" @click="showScriptCompare">
           <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="16" height="16" style="margin-right: 5px;">
             <path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>
           编辑保存
         </el-button>
+<!--         <el-button type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button>-->
       </div>
     </div>
 
@@ -247,9 +261,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, inject, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ref, computed, onMounted, onUnmounted, inject, nextTick, watch } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { toggleVideoFavorite } from '@/api/video'
+import { useIntersectionObserver } from "@/utils/useIntersectionObserver.js";
 
 // 定义props
 const props = defineProps({
@@ -273,8 +288,9 @@ const errorMessage = ref('未知错误')
 const loadingStatus = ref('')
 const loadingTimer = ref(null)
 const loadingTimeout = ref(null)
-const isVideoVisible = ref(true)
-const observer = ref(null)
+const isVideoVisible = ref(false)
+const shouldLoadVideo = ref(false)
+const visibilityObserver = ref(null)
 const videoSizeInKB = ref(0)
 
 // 网络状态检测
@@ -291,7 +307,7 @@ const currentlyPlaying = inject('currentlyPlaying', { videoId: null })
 
 // 视频URL和MIME类型处理
 const videoUrl = computed(() => {
-  if (!props.video.originalVideo) return ''
+  if (!props.video.originalVideo || !shouldLoadVideo.value) return ''
   return `/api/videos/file/${props.video.originalVideo}`
 })
 
@@ -340,10 +356,28 @@ const handleVideoPause = () => {
   }
 }
 
+// 暂停视频
+const pauseVideo = () => {
+  if (videoRef.value && !videoRef.value.paused) {
+    videoRef.value.pause()
+  }
+}
+
 // 处理视频可见性变化
 const handleVisibilityChange = (entries) => {
   const [entry] = entries
   isVideoVisible.value = entry.isIntersecting
+
+  // 如果视频进入可视区域且还未加载，则开始加载
+  if (isVideoVisible.value && !shouldLoadVideo.value) {
+    console.log('视频进入可视区域，开始加载:', props.video.title)
+    // 可以设置一个短暂延迟，避免快速滚动时加载太多视频
+    setTimeout(() => {
+      if (isVideoVisible.value) { // 再次检查是否仍然可见
+        shouldLoadVideo.value = true
+      }
+    }, 200)
+  }
 
   // 如果视频不可见且正在播放，则暂停
   if (!isVideoVisible.value && videoRef.value && !videoRef.value.paused) {
@@ -473,7 +507,7 @@ const getFileExtension = (filename) => {
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)
 const compareDialogVisible = ref(false)
-const isEditing = ref(false)
+const isEditing = ref(true)
 const saveLoading = ref(false)
 const editForm = ref({
   title: '',
@@ -546,30 +580,57 @@ const saveEdits = async () => {
 // 定义事件
 const emit = defineEmits(['favorite', 'delete','delete'])
 
+const handleDelete = () => emit('delete', props.video)
+
 // 处理收藏事件
 const handleFavorite = async () => {
-  ElMessage.warning('收藏功能暂未开放')
-  return
   favoriteLoading.value = true
   try {
-    await toggleVideoFavorite(props.video.id, !isFavorite.value)
-    isFavorite.value = !isFavorite.value
-    localStorage.setItem(`favorite_${props.video.id}`, isFavorite.value)
-    emit('favorite', { ...props.video, isFavorite: isFavorite.value })
-    ElMessage.success(isFavorite.value ? '收藏成功' : '已取消收藏')
+    props.video.isFavorite = props.video.isFavorite?props.video.isFavorite:false
+    if(props.video.isFavorite){
+      ElMessageBox.confirm('确定要取消收藏吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        'lock-scroll': false,
+        type: 'warning',
+      }).then(async () => {
+        await toggleVideoFavorite(String(props.video.id), !props.video.isFavorite)
+        props.video.isFavorite = !props.video.isFavorite
+        ElMessage.success(props.video.isFavorite ? '收藏成功' : '已取消收藏')
+      }).catch(() => {
+        ElMessage.info('取消操作')
+      })
+    }else{
+      await toggleVideoFavorite(String(props.video.id), !props.video.isFavorite)
+      props.video.isFavorite = !props.video.isFavorite
+      ElMessage.success(props.video.isFavorite ? '收藏成功' : '已取消收藏')
+    }
   } catch (error) {
     console.error('收藏操作失败:', error)
     ElMessage.error('操作失败，请重试')
-  } finally {
-    favoriteLoading.value = false
-  }
+    } finally {
+      favoriteLoading.value = false
+    }
 }
+
+// 监听shouldLoadVideo变化
+watch(shouldLoadVideo, (newVal) => {
+  if (newVal && videoRef.value) {
+    // 当决定加载视频时，重置状态
+    videoLoaded.value = false
+    videoError.value = false
+    // 给Vue一些时间更新DOM
+    nextTick(() => {
+      if (videoRef.value) {
+        // 手动触发视频加载
+        videoRef.value.load()
+      }
+    })
+  }
+})
 
 // 组件挂载时初始化
 onMounted(() => {
-  // 读取收藏状态
-  isFavorite.value = localStorage.getItem(`favorite_${props.video.id}`) === 'true'
-
   // 添加网络状态监听
   window.addEventListener('online', handleNetworkChange)
   window.addEventListener('offline', handleNetworkChange)
@@ -584,28 +645,32 @@ onMounted(() => {
     }
   })
 
-  // 视频加载超时检测
-  if (props.video.originalVideo && !isSmallDouyinVideo.value) {
-    loadingTimeout.value = setTimeout(() => {
-      if (!videoLoaded.value && !videoError.value) {
-        console.warn('视频加载超时')
-        videoError.value = true
-        errorMessage.value = '加载超时'
-      }
-    }, 15000) // 15秒超时
-  }
+  // 视频加载超时检测 - 只有当决定加载视频时才设置
+  watch(shouldLoadVideo, (newVal) => {
+    if (newVal && props.video.originalVideo) {
+      clearTimeout(loadingTimeout.value) // 清除现有定时器
+      loadingTimeout.value = setTimeout(() => {
+        if (!videoLoaded.value && !videoError.value) {
+          console.warn('视频加载超时')
+          videoError.value = true
+          errorMessage.value = '加载超时'
+        }
+      }, 15000) // 15秒超时
+    }
+  })
 
   // 初始化IntersectionObserver观察视频是否在可视区域内
   nextTick(() => {
-    if (videoPlayerRef.value && !isSmallDouyinVideo.value) {
-      observer.value = new IntersectionObserver(handleVisibilityChange, {
+    if (videoPlayerRef.value) {
+      visibilityObserver.value = new IntersectionObserver(handleVisibilityChange, {
         root: null, // 使用视口作为根
-        threshold: 0.3 // 当30%的视频可见时触发回调
-      })
+        threshold: 0.3, // 当30%的视频可见时触发回调
+        rootMargin: '100px' // 提前100px开始加载
+      });
 
-      observer.value.observe(videoPlayerRef.value)
+      visibilityObserver.value.observe(videoPlayerRef.value);
     }
-  })
+  });
 })
 
 onUnmounted(() => {
@@ -622,8 +687,8 @@ onUnmounted(() => {
   window.removeEventListener('offline', handleNetworkChange)
 
   // 清理IntersectionObserver
-  if (observer.value) {
-    observer.value.disconnect()
+  if (visibilityObserver.value) {
+    visibilityObserver.value.disconnect()
   }
 
   // 如果当前视频是正在播放的视频，清除该状态
@@ -648,7 +713,7 @@ onUnmounted(() => {
 .row-layout {
   display: flex;
   width: 100%;
-  height: 300px;
+  height: 380px;
 }
 
 /* 视频预览区域 */
@@ -666,7 +731,7 @@ onUnmounted(() => {
 
 .video-preview video {
   width: 300px;
-  max-height: 300px;
+  max-height: 380px;
 }
 
 /* 视频内容区域 */
@@ -792,7 +857,9 @@ onUnmounted(() => {
   flex-wrap: wrap;
   gap: 6px;
   align-items: center;
-}
+  max-height: 68px;
+  overflow: hidden;
+} 
 
 .label {
   font-weight: bold;
@@ -828,10 +895,12 @@ onUnmounted(() => {
 
 .script-header-title {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
     border-radius: 10px;
+    gap: 10px;
+    
 }
 
 .script-header-title h2 {
@@ -860,7 +929,6 @@ onUnmounted(() => {
     font-weight: 600;
     color: #303133;
     font-size: 15px;
-    margin-bottom: 5px;
 }
 
 .script-content-wrapper {
@@ -898,7 +966,7 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 6;
+  -webkit-line-clamp: 9;
   -webkit-box-orient: vertical;
   border-radius: 10px;
   transition: background-color 0.2s ease;
@@ -907,7 +975,7 @@ onUnmounted(() => {
 }
 
 .script-content:hover {
-  background-color: #f0f0f0;
+  background-color: #f2f2f2;
 }
 
 /* 操作区域 */
@@ -996,7 +1064,7 @@ onUnmounted(() => {
 /* 响应式调整 */
 @media screen and (max-width: 1150px) {
     .script-content{
-        -webkit-line-clamp: 5;
+        -webkit-line-clamp: 8;
     }
 }
 
@@ -1008,13 +1076,13 @@ onUnmounted(() => {
   
   .video-preview {
     width: 100%;
-    height: 300px;
+    height: 380px;
   }
 
   .video-preview video {
     max-width: 100%;
     width: auto;
-    max-height: 300px;
+    max-height: 380px;
   }
   
   .video-actions {
@@ -1024,6 +1092,17 @@ onUnmounted(() => {
     padding: 0 16px 16px;
     box-sizing: border-box;
   }
+
+  .video-meta{
+      gap: 1px;
+  }
+}
+
+@media screen and (max-width: 450px) {
+    .video-meta{
+        flex-direction: column;
+        align-items: start;
+    }
 }
 
 .edit-title-input :deep(.el-input__inner) {
@@ -1041,5 +1120,39 @@ onUnmounted(() => {
     font-size: 16px;
     line-height: 1.8;
     min-height: 400px;
+}
+
+/* 视频加载中状态和懒加载占位符 */
+.lazy-load-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lazy-load-placeholder:hover {
+  background-color: #424242;
+}
+
+.lazy-load-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.lazy-load-text {
+  color: white;
+  font-size: 14px;
 }
 </style> 

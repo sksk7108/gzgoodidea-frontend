@@ -12,9 +12,9 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3001, // 设置开发服务器端口
+    // port: 3001, // 设置开发服务器端口
     cors: true, // 允许跨域
-    host: true,
+    // host: true,
     proxy: {
       // 配置代理
       '/api': {

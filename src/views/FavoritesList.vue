@@ -1,7 +1,7 @@
 <!-- FavoritesList.vue -->
 <template>
   <div class="video-list">
-    <h2 class="page-title">我的收藏</h2>
+    <h2 class="page-title">我的文案</h2>
     
     <!-- 视频列表 -->
     <div v-loading="loading" class="video-list-container">
@@ -35,7 +35,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed, provide } from 'vue'
 import VideoCardRow from '@/components/VideoCardRow.vue'
-import { getVideoList, deleteVideo } from '@/api/video'
+import { getVideoList, deleteVideo, getCollectedVideos } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 提供全局视频播放状态
@@ -60,10 +60,11 @@ const fetchFavoritesList = async () => {
     const params = {
       pageNum: currentPage.value,
       pageSize: pageSize.value,
-      isFavorite: true // 只获取收藏的视频
+      // isFavorite: true // 只获取收藏的视频
     }
     
-    const response = await getVideoList(params)
+    const response = await getCollectedVideos(params)
+    // const response = null
     
     if (response && response.records) {
       videoList.value = response.records.map(video => {

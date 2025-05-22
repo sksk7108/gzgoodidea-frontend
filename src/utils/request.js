@@ -56,6 +56,7 @@ service.interceptors.response.use(
         ElMessage.error(res.msg || '服务器响应异常')
         if (res.msg && res.msg === '请先登录'){
           removeToken()
+          userStore.resetUser()
           router.push('/login')
           return
         }
@@ -64,6 +65,7 @@ service.interceptors.response.use(
         if (res.code === 401) {
           // token 过期或未登录
           removeToken()
+          userStore.resetUser()
           // 跳转到登录页
           router.push('/login')
           return
@@ -93,6 +95,7 @@ service.interceptors.response.use(
           message = '未授权，请重新登录'
           // 清除 token 并跳转登录页
           removeToken()
+          userStore.resetUser()
           router.push('/login')
           break
         case 403:

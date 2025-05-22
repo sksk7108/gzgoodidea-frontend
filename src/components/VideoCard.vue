@@ -550,9 +550,6 @@ const handleFavorite = async () => {
     await toggleVideoFavorite(props.video.id, !isFavorite.value)
     isFavorite.value = !isFavorite.value
 
-    // 更新本地存储状态
-    localStorage.setItem(`favorite_${props.video.id}`, isFavorite.value)
-
     // 触发事件通知父组件
     emit('favorite', { ...props.video, isFavorite: isFavorite.value })
 

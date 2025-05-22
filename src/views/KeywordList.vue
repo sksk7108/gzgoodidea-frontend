@@ -93,7 +93,7 @@
         <el-form-item label="关键词" prop="content">
           <el-input v-model="keywordForm.content" placeholder="请输入关键词" />
         </el-form-item>
-        <el-form-item label="查询时效" prop="expiryDays">
+        <el-form-item label="查询时效(天)" prop="expiryDays">
           <el-input-number
             v-model="keywordForm.expiryDays"
             :min="1"
@@ -101,16 +101,16 @@
             placeholder="天数"
           />
         </el-form-item>
-        <el-form-item label="点赞数" type="number" prop="likeCount">
+        <el-form-item label="点赞数 >" type="number" prop="likeCount">
           <el-input-number v-model="keywordForm.likeCount" :min="0" :step="5" :max="1000000" />
         </el-form-item>
-        <el-form-item label="评论数" type="number" prop="commentCount">
+        <el-form-item label="评论数 >" type="number" prop="commentCount">
           <el-input-number v-model="keywordForm.commentCount" :min="0" :step="5" :max="1000000" />
         </el-form-item>
-        <el-form-item label="收藏数" type="number" prop="favoriteCount">
+        <el-form-item label="收藏数 >" type="number" prop="favoriteCount">
           <el-input-number v-model="keywordForm.favoriteCount" :min="0" :step="5" :max="1000000" />
         </el-form-item>
-        <el-form-item label="分享数" type="number" prop="shareCount">
+        <el-form-item label="分享数 >" type="number" prop="shareCount">
           <el-input-number v-model="keywordForm.shareCount" :min="0" :step="5" :max="1000000" />
         </el-form-item>
         <!-- <el-form-item label="类型" prop="type">
@@ -160,7 +160,7 @@ const keywordForm = reactive({
   commentCount: 0,
   favoriteCount: 0,
   shareCount: 0,
-  expiryDays: 5
+  expiryDays: 1
 })
 
 // 表单验证规则
@@ -282,11 +282,11 @@ const openAddDialog = () => {
   isEdit.value = false
   keywordForm.id = ''
   keywordForm.content = ''
-  keywordForm.likeCount = 0
-  keywordForm.commentCount = 0
-  keywordForm.favoriteCount = 0
-  keywordForm.shareCount = 0
-  keywordForm.expiryDays = 3
+  keywordForm.likeCount = 50
+  keywordForm.commentCount = 50
+  keywordForm.favoriteCount = 50
+  keywordForm.shareCount = 50
+  keywordForm.expiryDays = 1
   dialogVisible.value = true
 }
 
@@ -395,5 +395,9 @@ onMounted(() => {
 
 :deep(.el-table__row:hover) {
   background-color: #f0f7ff !important;
+}
+
+:deep(.el-form-item__label){
+  width: 120px !important ;
 }
 </style>

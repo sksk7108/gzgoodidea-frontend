@@ -1,23 +1,8 @@
 <!-- SavedList.vue -->
 <template>
   <div class="video-list">
-    <h2 class="page-title">已保存的视频</h2>
+    <h2 class="page-title">智能文案</h2>
     
-    <!-- 视频列表 -->
-    <div v-loading="loading" class="video-grid-container">
-      <div v-if="videoList.length > 0" class="masonry-grid">
-        <VideoCard
-          v-for="video in videoList"
-          :key="video.id"
-          :video="video"
-          @favorite="handleFavorite"
-          @save="handleSave"
-          @delete="handleDelete"
-          class="masonry-item"
-        />
-      </div>
-      <el-empty v-else description="暂无保存内容" />
-    </div>
 
     <!-- 分页 -->
     <div class="pagination" v-if="total > 0">
@@ -33,8 +18,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
-import VideoCard from '@/components/VideoCard.vue'
+import { ref, onMounted } from 'vue'
 import { getVideoList, deleteVideo, toggleVideoFavorite } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
@@ -59,8 +43,9 @@ const fetchSavedList = async () => {
       isEdited: true // 只获取已编辑保存的视频
     }
     
-    const response = await getVideoList(params)
-    
+    // const response = await getVideoList(params)
+    const response = null
+
     if (response && response.records) {
       videoList.value = response.records.map(video => ({
         ...video,
@@ -184,17 +169,6 @@ onMounted(() => {
   min-height: 400px;
 }
 
-.masonry-grid {
-  columns: 5;
-  column-gap: 20px;
-  width: 100%;
-}
-
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 20px;
-  min-width: 380px;
-}
 
 .pagination {
   display: flex;
@@ -204,31 +178,4 @@ onMounted(() => {
   width: 100%;
 }
 
-@media screen and (max-width: 2000px) {
-  .masonry-grid {
-    columns: 4;
-  }
-}
-
-@media screen and (max-width: 1600px) {
-  .masonry-grid {
-    columns: 3;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .masonry-grid {
-    columns: 2;
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .masonry-grid {
-    columns: 1;
-  }
-  
-  .video-list {
-    padding: 0 10px;
-  }
-}
 </style> 

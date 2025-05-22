@@ -59,12 +59,20 @@ export function deleteVideo(id) {
 
 /**
  * 收藏/取消收藏视频
- * @param {String} id - 视频ID
- * @param {Boolean} isFavorite - 是否收藏
+ * @param {String} videoId - 视频ID
+ * @param {Boolean} isCollected - 是否收藏
  * @returns {Promise}
  */
-export function toggleVideoFavorite(id, isFavorite) {
-  return put(`/videos/${id}/favorite`, { isFavorite })
+export function toggleVideoFavorite(videoId, isCollected) {
+  return put(`/employee/collect`, { videoId, isCollected })
+}
+
+/**
+ * 获取收藏视频列表
+ * @returns {Promise}
+ */
+export function getCollectedVideos(params) {
+  return get('/employee/collects', params)
 }
 
 /**

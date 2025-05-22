@@ -34,9 +34,9 @@ const routes = [
         component: () => import('@/views/FavoritesList.vue')
       },
       {
-        path: 'saved',
-        name: 'Saved',
-        component: () => import('@/views/SavedList.vue')
+        path: 'copywriting',
+        name: 'Copywriting',
+        component: () => import('@/views/AiCopywritingList.vue')
       },
       {
         path: 'keywords',

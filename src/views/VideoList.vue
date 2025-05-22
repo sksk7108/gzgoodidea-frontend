@@ -121,18 +121,17 @@
     </el-card>
 
     <!-- 视频列表 -->
-    <div v-loading="loading" class="video-grid-container">
-      <div v-if="videoList.length > 0" class="masonry-grid">
-        <VideoCard
+    <div v-loading="loading" class="video-list-container">
+      <div v-if="videoList.length > 0" class="video-rows">
+        <VideoCardRow
           v-for="video in videoList"
           :key="video.id"
           :video="video"
           @favorite="handleFavorite"
           @save="handleSave"
-          @approve="handleApprove"
-          @reject="handleReject"
+          :showEditBtn="false"
           @delete="handleDelete"
-          class="masonry-item"
+          class="video-row-item"
         />
       </div>
       <el-empty v-else description="暂无数据" />
@@ -152,8 +151,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, provide } from 'vue'
-import VideoCard from '@/components/VideoCard.vue'
+import { ref, reactive, onMounted, computed, provide, nextTick } from 'vue'
+import VideoCardRow from '@/components/VideoCardRow.vue'
 import { getVideoList, auditVideoStatus, deleteVideo } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { getKeywordList, getKeywordGroupsList } from '@/api/keyword'
@@ -261,7 +260,7 @@ const sortOptions = [
 
 // 分页数据
 const currentPage = ref(1)
-const pageSize = ref(9)
+const pageSize = ref(10) // 行排式布局每页显示10条
 const total = ref(0)
 
 // 视频列表数据
@@ -328,17 +327,23 @@ const fetchVideoList = async () => {
     
     // 根据实际接口返回格式进行适配
     if (response && response.records) {
-      videoList.value = response.records || []
-      total.value = response.total || 0
-      videoList.value = response.records.map(video => ({
-        ...video,
-        formattedTopic: formatTopicForHTML(video.topic), // 格式化后的 topic
-      }));
-      console.log(videoList.value)
+      videoList.value = []  // 先清空列表，避免直接替换导致滚动位置突变
+      nextTick(() => {
+        videoList.value = response.records || []
+        total.value = response.total || 0
+        videoList.value = response.records.map(video => ({
+          ...video,
+          formattedTopic: formatTopicForHTML(video.topic), // 格式化后的 topic
+        }));
+        console.log(videoList.value)
+      })
     } else {
       // 兼容其它数据格式
-      videoList.value = Array.isArray(response) ? response : (response?.items || [])
-      total.value = response?.total || (Array.isArray(response) ? response.length : 0)
+      videoList.value = []
+      nextTick(() => {
+        videoList.value = Array.isArray(response) ? response : (response?.items || [])
+        total.value = response?.total || (Array.isArray(response) ? response.length : 0)
+      })
     }
 
     // 处理空数据情况
@@ -539,11 +544,12 @@ const handleDelete = (video) => {
   max-width: 100%;
   box-sizing: border-box;
   padding: 0 20px;
+  align-items: center;
 }
 
 .filter-section {
   margin-bottom: 20px;
-  width: 100%;
+  width: 99%;
 }
 
 .filter-header {
@@ -654,22 +660,29 @@ const handleDelete = (video) => {
   margin-right: 5px;
 }
 
-.video-grid-container {
+.video-list-container {
   width: 100%;
   overflow-x: hidden;
   min-height: 400px;
 }
 
-.masonry-grid {
-  columns: 5;
-  column-gap: 20px;
+.video-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 20px;
-  min-width: 380px;
+.video-row-item {
+  width: 99%;
+  border-radius: 10px;
+}
+
+.video-row-item:hover {
+  box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .pagination {
@@ -680,29 +693,7 @@ const handleDelete = (video) => {
   width: 100%;
 }
 
-@media screen and (max-width: 2000px) {
-  .masonry-grid {
-    columns: 4;
-  }
-}
-
-@media screen and (max-width: 1600px) {
-  .masonry-grid {
-    columns: 3;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .masonry-grid {
-    columns: 2;
-  }
-}
-
 @media screen and (max-width: 900px) {
-  .masonry-grid {
-    columns: 1;
-  }
-  
   .video-list {
     padding: 0 10px;
   }
