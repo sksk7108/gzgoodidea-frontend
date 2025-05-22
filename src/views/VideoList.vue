@@ -335,7 +335,12 @@ const fetchVideoList = async () => {
           ...video,
           formattedTopic: formatTopicForHTML(video.topic), // 格式化后的 topic
         }));
-        console.log(videoList.value)
+        
+        // 处理空数据情况
+        if (videoList.value.length === 0 && currentPage.value > 1) {
+          currentPage.value = 1  // 如果当前页没有数据，回到第一页
+          fetchVideoList()
+        }
       })
     } else {
       // 兼容其它数据格式
@@ -346,11 +351,7 @@ const fetchVideoList = async () => {
       })
     }
 
-    // 处理空数据情况
-    if (videoList.value.length === 0 && currentPage.value > 1) {
-      currentPage.value = 1  // 如果当前页没有数据，回到第一页
-      fetchVideoList()
-    }
+
   } catch (error) {
     console.error('获取视频列表失败', error)
     ElMessage.error('获取视频列表失败')

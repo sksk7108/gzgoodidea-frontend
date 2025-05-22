@@ -187,7 +187,7 @@
             <path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>
           编辑保存
         </el-button>
-<!--         <el-button type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button>-->
+        <!-- <el-button type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button> -->
       </div>
     </div>
 
@@ -264,7 +264,6 @@
 import { ref, computed, onMounted, onUnmounted, inject, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { toggleVideoFavorite } from '@/api/video'
-import { useIntersectionObserver } from "@/utils/useIntersectionObserver.js";
 
 // 定义props
 const props = defineProps({
@@ -966,7 +965,7 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 9;
+  -webkit-line-clamp: 10;
   -webkit-box-orient: vertical;
   border-radius: 10px;
   transition: background-color 0.2s ease;

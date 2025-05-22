@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, provide } from 'vue'
+import { ref, reactive, onMounted, computed, provide, nextTick } from 'vue'
 import VideoCardRow from '@/components/VideoCardRow.vue'
 import { getVideoList, deleteVideo, getCollectedVideos } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -67,12 +67,15 @@ const fetchFavoritesList = async () => {
     // const response = null
     
     if (response && response.records) {
-      videoList.value = response.records.map(video => {
-        return {
-          ...video,
+      videoList.value = []
+      nextTick(() => {
+        videoList.value = response.records.map(video => {
+          return {
+            ...video,
           formattedTopic: formatTopicForHTML(video.topic),
           isFavorite: true // 确保标记为收藏状态
-        }
+          }
+        })
       })
       total.value = response.total || 0
     } else {
