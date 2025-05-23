@@ -128,8 +128,7 @@
           :key="video.id"
           :video="video"
           @favorite="handleFavorite"
-          @save="handleSave"
-          :showEditBtn="false"
+          :isMyCopyPage="false"
           @delete="handleDelete"
           class="video-row-item"
         />
@@ -364,15 +363,17 @@ const fetchVideoList = async () => {
 
 // 获取标签选项
 const fetchTagOptions = async () => {
-  let keywordList
+  let keywordList = null
   const response = await getKeywordGroupsList()
   if (response && response.groups) {
-    keywordList = response.groups[0].keywords
+    keywordList = response.groups[0]?.keywords
   }
-  tagOptions.value = keywordList.map(tag => ({
-    label: tag.content,
-    value: tag.content
-  }))
+  if (keywordList){
+    tagOptions.value = keywordList.map(tag => ({
+      label: tag.content,
+      value: tag.content
+    }))
+  }
   tagOptions.value.unshift({
     label: '全部',
     value: ''
@@ -477,7 +478,7 @@ const handleFavorite = (video) => {
 // 处理视频保存
 const handleSave = (video) => {
   // 更新本地视频列表数据
-  const index = videoList.value.findIndex(item => item.id === video.id)
+  const index = videoList.value.findIndex(item => item.id === video.videoId)
   if (index !== -1) {
     videoList.value[index] = { ...videoList.value[index], ...video }
     // 格式化topic

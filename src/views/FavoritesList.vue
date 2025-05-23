@@ -11,9 +11,10 @@
           :key="video.id"
           :video="video"
           @favorite="handleFavorite"
+          @save="handleSave"
           @delete="handleDelete"
           class="video-row-item"
-          :showEditBtn="true"
+          :isMyCopyPage="true"
         />
       </div>
       <el-empty v-else description="暂无收藏内容" />
@@ -35,7 +36,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed, provide, nextTick } from 'vue'
 import VideoCardRow from '@/components/VideoCardRow.vue'
-import { getVideoList, deleteVideo, getCollectedVideos } from '@/api/video'
+import { getVideoList, deleteVideo, getCollectedVideos, deleteVideoCopywriting } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 提供全局视频播放状态
@@ -116,15 +117,25 @@ const handleFavorite = (video) => {
   ElMessage.success('已取消收藏')
 }
 
+// 保存视频
+const handleSave = (video) => {
+  const index = videoList.value.findIndex(item => item.id === video.id)
+  if (index !== -1) {
+    videoList.value[index].title = video.title
+    videoList.value[index].originalScript = video.originalScript
+  }
+}
+
 // 删除视频
 const handleDelete = (video) => {
   ElMessageBox.confirm('确认删除该视频吗？此操作不可恢复。', '警告', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
+    'lock-scroll': false,
     type: 'warning'
   }).then(async () => {
     try {
-      await deleteVideo(video.id)
+      await deleteVideoCopywriting(video.id, false)
       ElMessage.success('删除成功')
       // 从列表中移除
       videoList.value = videoList.value.filter(item => item.id !== video.id)

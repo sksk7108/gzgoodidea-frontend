@@ -44,6 +44,11 @@ const routes = [
         component: () => import('@/views/KeywordList.vue')
       },
       {
+        path: 'matrix',
+        name: 'Matrix',
+        component: () => import('@/views/MatrixList.vue')
+      },
+      {
         path: 'ai-config',
         name: 'AIConfig',
         component: () => import('@/views/AIConfig.vue'),

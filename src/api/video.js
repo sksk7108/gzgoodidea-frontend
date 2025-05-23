@@ -68,6 +68,34 @@ export function toggleVideoFavorite(videoId, isCollected) {
 }
 
 /**
+ * 添加文案
+ * @param {Object} data - 文案数据
+ * @returns {Promise}
+ */
+export function addVideoCopywriting(data) {
+  return post('/employee/collect', data)
+}
+
+/**
+ * 修改视频文案
+ * @param {Object} data - 文案数据
+ * @returns {Promise}
+ */
+export function updateVideoCopywriting(data) {
+  return post('/employee/collect', data)
+}
+
+/**
+ * 删除文案
+ * @param {String} id - 文案ID
+ * @param {Boolean} isCollected - 是否收藏
+ * @returns {Promise}
+ */
+export function deleteVideoCopywriting(id, isCollected) {
+  return post(`/employee/collect`, { id, isCollected })
+}
+
+/**
  * 获取收藏视频列表
  * @returns {Promise}
  */
@@ -82,4 +110,4 @@ export function getCollectedVideos(params) {
  */
 export function saveVideoInfo(data) {
   return put(`/videos/${data.id}`, data)
-} 
+}

@@ -113,35 +113,42 @@
           <h3 class="video-title">{{ video.title }}</h3>
           <div class="video-meta">
             <span class="source">{{ video.hotSource }}</span>
+            <div class="videolink">
+              <a :href="video.videoUrl" target="_blank" class="original-link">
+                <svg t="1747962731701" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5478" width="16" height="16"><path d="M62.296463 576.23471l64.234709-64.23471 85.676565 85.646279-42.853425 42.853425a121.140424 121.140424 0 0 0 0 171.292559l42.853425 42.853425a121.140424 121.140424 0 0 0 171.292559 0l214.145983-214.145984a121.140424 121.140424 0 0 0 0-171.322844l-42.823139-42.823139a120.080445 120.080445 0 0 0-24.440081-18.413345l88.705075-88.67479 85.64628 85.64628a211.995741 211.995741 0 0 1 0 299.822548l-256.969124 256.969123a211.995741 211.995741 0 0 1-299.822548 0l-85.646279-85.646279a211.995741 211.995741 0 0 1 0-299.822548z" fill="#E13455" p-id="5479"></path><path d="M961.703537 447.76529l-64.234709 64.23471-85.676565-85.646279 42.853425-42.853425a121.140424 121.140424 0 0 0 0-171.292559l-42.853425-42.853425a121.140424 121.140424 0 0 0-171.292559 0l-214.145983 214.145984a121.140424 121.140424 0 0 0 0 171.322844l42.823139 42.823139a120.080445 120.080445 0 0 0 24.440081 18.413345L404.911866 704.734414l-85.64628-85.64628a211.995741 211.995741 0 0 1 0-299.822548l256.969124-256.969123a211.995741 211.995741 0 0 1 299.822548 0l85.646279 85.646279a211.995741 211.995741 0 0 1 0 299.822548z" fill="#409eff" p-id="5480"></path></svg>
+                <span>查看原视频</span>
+              </a>
+            </div>
             <span class="time">{{ video.publishTime }}</span>
             <!-- 视频统计数据 -->
-          <div class="video-stats">
-            <span class="stat-item">
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
-                <path d="M512 896l-57.6-51.2c-198.4-177.6-329.6-297.6-329.6-444.8 0-119.466667 93.866667-211.2 213.333333-211.2 68.266667 0 132.266667 32 174.933334 81.066667C554.666667 221.866667 618.666667 189.866667 686.933333 189.866667c119.466667 0 213.333333 93.866667 213.333334 211.2 0 147.2-131.2 267.2-329.6 444.8L512 896z" fill="#d81e06"/>
-              </svg>
-              {{ video.likeCount }}
-            </span>
-            <span class="stat-item">
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
-                <path d="M511.9 827.5L610.7 726l17.4-17.9h209v-472H187.3v472.1h208.4l17.4 17.9 98.8 101.4m0 77.9c-4.1 0-8.3-1.6-11.5-4.9L370.7 767.3H166.6c-21.2 0-38.4-17.6-38.4-39.3V216.4c0-21.7 17.2-39.3 38.4-39.3h691.2c21.2 0 38.4 17.6 38.4 39.3V728c0 21.7-17.2 39.3-38.4 39.3H653L523.3 900.5c-3.2 3.2-7.3 4.9-11.4 4.9z" fill="#1296db"/>
-                <path d="M334.9 433c27.2 0 49.3 22 49.3 49.2 0 27.2-22 49.2-49.3 49.2-27.2 0-49.2-22-49.2-49.2 0-27.1 22.1-49.2 49.2-49.2zM512.2 433c27.2 0 49.2 22 49.2 49.2 0 27.2-22 49.2-49.2 49.2-27.2 0-49.2-22-49.2-49.2 0-27.1 22-49.2 49.2-49.2zM689.4 433c27.2 0 49.2 22 49.2 49.2 0 27.2-22 49.2-49.2 49.2-27.2 0-49.3-22-49.3-49.2 0.1-27.1 22.1-49.2 49.3-49.2z" fill="#1296db"/>
-              </svg>
-              {{ video.commentCount }}
-            </span>
-            <span class="stat-item">
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
-                <path d="M919.272727 416.581818L607.418182 79.127273c-11.636364-11.636364-32.581818-11.636364-44.218182 0-6.981818 6.981818-9.309091 16.290909-9.309091 25.6v181.527272c-258.327273 0-465.454545 207.127273-465.454545 463.127273 0 62.836364 13.963636 125.672727 39.563636 183.854546 37.236364-193.163636 221.090909-339.781818 425.890909-339.781819v181.527273c-2.327273 9.309091 2.327273 18.618182 9.309091 25.6 4.654545 6.981818 13.963636 9.309091 23.272727 9.309091s18.618182-4.654545 23.272728-11.636364L919.272727 465.454545c6.981818-6.981818 9.309091-13.963636 9.309091-23.272727s-4.654545-18.618182-9.309091-25.6z" fill="#707070"/>
-              </svg>
-              {{ video.shareCount }}
-            </span>
-            <span class="stat-item">
-              <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
-                <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" fill="#FEB432"/>
-              </svg>
-              {{ video.favoriteCount }}
-            </span>
-          </div>
+            <div class="video-stats" v-if="!isMyCopyPage">
+              <span class="stat-item">
+                <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
+                  <path d="M512 896l-57.6-51.2c-198.4-177.6-329.6-297.6-329.6-444.8 0-119.466667 93.866667-211.2 213.333333-211.2 68.266667 0 132.266667 32 174.933334 81.066667C554.666667 221.866667 618.666667 189.866667 686.933333 189.866667c119.466667 0 213.333333 93.866667 213.333334 211.2 0 147.2-131.2 267.2-329.6 444.8L512 896z" fill="#d81e06"/>
+                </svg>
+                {{ video.likeCount }}
+              </span>
+              <span class="stat-item">
+                <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
+                  <path d="M511.9 827.5L610.7 726l17.4-17.9h209v-472H187.3v472.1h208.4l17.4 17.9 98.8 101.4m0 77.9c-4.1 0-8.3-1.6-11.5-4.9L370.7 767.3H166.6c-21.2 0-38.4-17.6-38.4-39.3V216.4c0-21.7 17.2-39.3 38.4-39.3h691.2c21.2 0 38.4 17.6 38.4 39.3V728c0 21.7-17.2 39.3-38.4 39.3H653L523.3 900.5c-3.2 3.2-7.3 4.9-11.4 4.9z" fill="#1296db"/>
+                  <path d="M334.9 433c27.2 0 49.3 22 49.3 49.2 0 27.2-22 49.2-49.3 49.2-27.2 0-49.2-22-49.2-49.2 0-27.1 22.1-49.2 49.2-49.2zM512.2 433c27.2 0 49.2 22 49.2 49.2 0 27.2-22 49.2-49.2 49.2-27.2 0-49.2-22-49.2-49.2 0-27.1 22-49.2 49.2-49.2zM689.4 433c27.2 0 49.2 22 49.2 49.2 0 27.2-22 49.2-49.2 49.2-27.2 0-49.3-22-49.3-49.2 0.1-27.1 22.1-49.2 49.3-49.2z" fill="#1296db"/>
+                </svg>
+                {{ video.commentCount }}
+              </span>
+              <span class="stat-item">
+                <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
+                  <path d="M919.272727 416.581818L607.418182 79.127273c-11.636364-11.636364-32.581818-11.636364-44.218182 0-6.981818 6.981818-9.309091 16.290909-9.309091 25.6v181.527272c-258.327273 0-465.454545 207.127273-465.454545 463.127273 0 62.836364 13.963636 125.672727 39.563636 183.854546 37.236364-193.163636 221.090909-339.781818 425.890909-339.781819v181.527273c-2.327273 9.309091 2.327273 18.618182 9.309091 25.6 4.654545 6.981818 13.963636 9.309091 23.272727 9.309091s18.618182-4.654545 23.272728-11.636364L919.272727 465.454545c6.981818-6.981818 9.309091-13.963636 9.309091-23.272727s-4.654545-18.618182-9.309091-25.6z" fill="#707070"/>
+                </svg>
+                {{ video.shareCount }}
+              </span>
+              <span class="stat-item">
+                <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16">
+                  <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" fill="#FEB432"/>
+                </svg>
+                {{ video.favoriteCount }}
+              </span>
+            </div>
+            
           </div>
         </div>
         
@@ -176,17 +183,30 @@
 
       <!-- 操作区域 -->
       <div class="video-actions">
-        <el-button type="primary" size="default" @click="handleFavorite" :loading="favoriteLoading">
-          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">
-            <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="video.isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>
-          </svg>
-          {{ video.isFavorite ? '已收藏' : '收藏' }}
+        <el-button type="primary" size="default" v-if="!isMyCopyPage" :loading="addVideoCopywritingLoading" @click="addToVideoCopywriting">
+          <svg t="1747967687511" style="margin-right: 5px;" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6469" width="24" height="24"><path d="M836.19 61c32.253 0.552 56.81 27.921 56.81 60v367.634h-72V133.001H203V890.06l315.94-0.047 0.01 72-330.155 0.048h-0.98c-32.258-0.553-56.815-27.922-56.815-60V120.029C131.502 88.05 156.383 61 188.79 61zM806 578v153.999L960 732v74l-154-0.001V960h-74V805.999L578 806v-74l154-0.001V578h74z" fill="#f3f3f3" p-id="6470" data-spm-anchor-id="a313x.search_index.0.i2.285d3a81wIaUKc" class="selected"></path><path d="M759.596 252.404v80.193h-495v-80.193z" fill="#e6e6e6" p-id="6471" data-spm-anchor-id="a313x.search_index.0.i3.285d3a81wIaUKc" class=""></path></svg>
+          收藏文案
         </el-button>
-       <el-button type="success" size="default" v-if="showEditBtn" style="margin: 0;" @click="showScriptCompare">
-          <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="16" height="16" style="margin-right: 5px;">
+
+<!--        <el-button type="primary" size="default" v-if="isMyCopyPage" @click="handleFavorite" :loading="favoriteLoading">-->
+<!--          <svg class="icon" viewBox="0 0 1024 1024" width="16" height="16" style="margin-right: 5px;">-->
+<!--            <path d="M249.027212 1024a81.085086 81.085086 0 0 1-47.614289-15.359448 82.461037 82.461037 0 0 1-34.302767-81.917056l40.958528-251.894948a31.99885 31.99885 0 0 0-8.703687-27.647006L23.755308 466.452037a83.932984 83.932984 0 0 1-19.455301-84.988946 82.301042 82.301042 0 0 1 65.917631-55.805994L307.905096 289.306403a31.198879 31.198879 0 0 0 24.063135-17.919356l104.956229-223.351973a82.90902 82.90902 0 0 1 150.394595 0l104.540243 223.351973a31.99885 31.99885 0 0 0 24.063135 17.919356l237.463466 36.350694a83.453001 83.453001 0 0 1 46.590326 140.79494l-175.609689 180.729505a32.606828 32.606828 0 0 0-8.703687 27.647006l40.958528 251.894948a83.804988 83.804988 0 0 1-34.302767 81.917056 81.853058 81.853058 0 0 1-88.060836 4.607834l-206.712571-114.683878a32.670826 32.670826 0 0 0-30.718896 0l-207.352548 115.19586a87.964839 87.964839 0 0 1-40.446547 10.239632z" :fill="video.isFavorite? '#FEB432':'#f0f0f0'" p-id="5560"></path>-->
+<!--          </svg>-->
+<!--          {{ video.isFavorite ? '已收藏' : '收藏' }}-->
+<!--        </el-button>-->
+
+        <el-button type="success" size="default" v-if="isMyCopyPage" style="margin: 0;" @click="showScriptCompare">
+          <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="15" height="15" style="margin-right: 5px;">
             <path d="M343.795 676.7l217.37-61.723-155.264-154.295-62.106 216.017z m580.56-422.687L769.087 99.71l-341.584 339.46 155.264 154.3L924.35 254.014h0.005z m-45.25 571.432c0 53.635-43.474 97.108-97.108 97.108H199.272c-53.64 0-97.129-43.473-97.129-97.108V242.722c0-53.635 43.483-97.123 97.129-97.123h388.474l97.128-97.119H166.896C77.503 48.48 5.03 120.953 5.03 210.34v647.476c0 89.392 72.478 161.86 161.866 161.86h647.467c89.396 0 161.875-72.468 161.875-161.86V339.843l-97.133 97.124v388.478h0.005-0.005z m117.402-701.053l-97.034-96.436c-16.081-15.978-43.02-15.116-60.173 1.925l-46.577 46.293 155.264 154.294 46.581-46.289c17.154-17.034 18.02-43.813 1.94-59.787z m0 0" p-id="4629" fill="#e6e6e6"></path></svg>
-          编辑保存
+          编辑
         </el-button>
+
+        <el-button type="danger" size="default" v-if="isMyCopyPage" style="margin: 0;" @click="delVideoCopywriting" :loading="delVideoCopywritingLoading">
+          <svg t="1747969008115" style="margin-right: 5px;" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8170" width="16" height="16"><path d="M382.320274 405.357714v384a20.626286 20.626286 0 0 1-21.577143 21.284572H317.44256a20.626286 20.626286 0 0 1-21.577143-21.357715v-384a20.626286 20.626286 0 0 1 21.577143-21.284571h43.154286a20.626286 20.626286 0 0 1 21.577143 21.357714h0.073142z m172.909715 0v384a20.626286 20.626286 0 0 1-21.650286 21.284572h-43.154286a20.626286 20.626286 0 0 1-21.577143-21.357715v-384a20.626286 20.626286 0 0 1 21.577143-21.284571h43.154286a20.626286 20.626286 0 0 1 21.577143 21.357714z m172.909714 0v384a20.626286 20.626286 0 0 1-21.650286 21.284572h-43.154286a20.626286 20.626286 0 0 1-21.577142-21.357715l-0.073143-384a20.626286 20.626286 0 0 1 21.577143-21.284571h43.227428a20.626286 20.626286 0 0 1 21.577143 21.357714z m86.381714 482.669715V256H209.483703v631.954286a74.825143 74.825143 0 0 0 14.482286 45.056c3.364571 3.803429 5.778286 5.632 7.094857 5.632h561.883428c1.316571 0 3.657143-1.828571 7.094857-5.632a74.825143 74.825143 0 0 0 14.555429-44.982857zM360.743131 170.642286h302.518858l-32.402286-77.970286a19.017143 19.017143 0 0 0-11.483429-7.314286H405.287131a19.017143 19.017143 0 0 0-11.483428 7.314286l-33.060572 77.970286zM987.431131 192v42.642286a20.626286 20.626286 0 0 1-21.577142 21.357714h-64.877715v631.954286c0 36.937143-10.532571 68.754286-31.744 95.744-21.211429 26.843429-46.592 40.301714-76.288 40.301714H231.060846c-29.696 0-55.149714-13.019429-76.288-38.985143-21.211429-26.038857-31.744-57.490286-31.744-94.354286V256H58.151131A20.626286 20.626286 0 0 1 36.573989 234.642286v-42.642286a20.626286 20.626286 0 0 1 21.577142-21.357714h208.676572L314.151131 59.318857c6.729143-16.457143 18.870857-30.427429 36.425143-41.984 17.554286-11.556571 35.401143-17.334857 53.394286-17.334857h216.064c17.993143 0 35.84 5.778286 53.394286 17.334857 17.554286 11.556571 29.696 25.6 36.425143 41.984l47.323428 111.323429h208.676572a20.626286 20.626286 0 0 1 21.577142 21.357714z" fill="#f3f3f3" p-id="8171"></path></svg>
+          删除
+        </el-button>
+
+
         <!-- <el-button type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button> -->
       </div>
     </div>
@@ -247,7 +267,9 @@
       <template #footer>
         <div class="dialog-footer">
           <template v-if="isEditing">
-            <el-button type="primary" :loading="saveLoading" @click="saveEdits">保存到我的文案</el-button>
+            <el-button type="primary" style="margin-right: 10px;" :loading="saveLoading" @click="saveEdits">
+              {{ isMyCopyPage? '保存':'保存到我的文案' }}
+            </el-button>
             <el-button @click="cancelEdit">关闭</el-button>
           </template>
           <template v-else>
@@ -263,7 +285,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, inject, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { toggleVideoFavorite } from '@/api/video'
+import { toggleVideoFavorite, addVideoCopywriting, updateVideoCopywriting } from '@/api/video'
 
 // 定义props
 const props = defineProps({
@@ -271,7 +293,7 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  showEditBtn: {
+  isMyCopyPage: {
     type: Boolean,
     default: false
   }
@@ -505,6 +527,8 @@ const getFileExtension = (filename) => {
 // 收藏和编辑状态
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)
+const addVideoCopywritingLoading = ref(false)
+const delVideoCopywritingLoading = ref(false)
 const compareDialogVisible = ref(false)
 const isEditing = ref(true)
 const saveLoading = ref(false)
@@ -539,34 +563,31 @@ const cancelEdit = () => {
 
 // 保存编辑
 const saveEdits = async () => {
-  ElMessage.warning('保存功能暂未开放')
-  return
   if (!editForm.value.title.trim()) {
     ElMessage.warning('标题不能为空')
     return
   }
-
   saveLoading.value = true
   try {
     // 构建保存的数据
-    const saveData = {
-      id: props.video.id,
+    let saveData = {
+      isCollected: true,
       title: editForm.value.title,
       originalScript: editForm.value.originalScript
     }
-
-    // 调用接口保存编辑
-    await saveVideoInfo(saveData)
+    console.warn(props.video)
+    if (!props.isMyCopyPage){
+      saveData.videoId = props.video.id
+      await addVideoCopywriting(saveData)
+      ElMessage.success('已保存到我的文案')
+    } else {
+      saveData = { id:props.video.id, videoId: props.video.videoId, ...saveData }
+      await updateVideoCopywriting(saveData)
+    ElMessage.success('保存成功')
+    }
 
     // 通知父组件更新
-    emit('save', {
-      ...props.video,
-      title: editForm.value.title,
-      originalScript: editForm.value.originalScript
-    })
-
-    ElMessage.success('保存成功')
-    isEditing.value = false
+    emit('save', saveData)
   } catch (error) {
     console.error('保存失败:', error)
     ElMessage.error('保存失败，请重试')
@@ -577,9 +598,32 @@ const saveEdits = async () => {
 
 
 // 定义事件
-const emit = defineEmits(['favorite', 'delete','delete'])
+const emit = defineEmits(['favorite', 'delete'])
 
 const handleDelete = () => emit('delete', props.video)
+
+// 添加到我的文案
+const addToVideoCopywriting = async () => {
+  addVideoCopywritingLoading.value = true
+  try {
+
+    const saveData = {
+      videoId: props.video.id,
+      isCollected: true,
+      title: props.video.title,
+      content: props.video.originalScript
+    }
+    await addVideoCopywriting(saveData)
+    ElMessage.success('添加到我的文案成功')
+  } catch (error) {
+    ElMessage.error('添加到我的文案失败')
+  } finally {
+    addVideoCopywritingLoading.value = false
+  }
+}
+
+// 删除我的文案
+const delVideoCopywriting = () => emit('delete', props.video)
 
 // 处理收藏事件
 const handleFavorite = async () => {
@@ -1053,6 +1097,19 @@ onUnmounted(() => {
   font-size: 12px;
 }
 
+.original-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #409eff;
+  text-decoration: none;
+  background-color: rgb(216.8,235.6,255);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  min-width: 80px;
+}
+
 .error-text {
   display: flex;
   flex-direction: column;
@@ -1067,10 +1124,28 @@ onUnmounted(() => {
     }
 }
 
+@media screen and (max-width: 1000px) {
+  .video-meta{
+    flex-direction: column;
+    align-items: start;
+  }
+  .script-content{
+      -webkit-line-clamp: 6;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .row-layout {
     flex-direction: column;
     height: auto;
+  }
+
+  .video-meta{
+    flex-direction: row;
+    align-items: center;
+  }
+  .script-content{
+      -webkit-line-clamp: 8;
   }
   
   .video-preview {
