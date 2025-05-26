@@ -7,7 +7,7 @@ import request from '@/utils/request'
  */
 export function getMatrixList(params) {
   return request({
-    url: '/api/matrix/list',
+    url: '/matrixes',
     method: 'get',
     params
   })
@@ -20,7 +20,7 @@ export function getMatrixList(params) {
  */
 export function getMatrixDetail(id) {
   return request({
-    url: `/api/matrix/${id}`,
+    url: `/matrix/${id}`,
     method: 'get'
   })
 }
@@ -32,7 +32,7 @@ export function getMatrixDetail(id) {
  */
 export function createMatrix(data) {
   return request({
-    url: '/api/matrix',
+    url: '/matrix',
     method: 'post',
     data
   })
@@ -46,9 +46,9 @@ export function createMatrix(data) {
  */
 export function updateMatrix(id, data) {
   return request({
-    url: `/api/matrix/${id}`,
+    url: `/matrix`,
     method: 'put',
-    data
+    data: {id, ...data}
   })
 }
 
@@ -59,18 +59,7 @@ export function updateMatrix(id, data) {
  */
 export function deleteMatrix(id) {
   return request({
-    url: `/api/matrix/${id}`,
+    url: `/matrix/${id}`,
     method: 'delete'
-  })
-}
-
-/**
- * 获取可关联账号列表
- * @returns {Promise}
- */
-export function getAccountsList() {
-  return request({
-    url: '/api/accounts/list',
-    method: 'get'
   })
 } 

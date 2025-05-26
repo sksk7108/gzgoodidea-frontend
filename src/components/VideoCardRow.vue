@@ -18,7 +18,7 @@
             </svg>
             <div class="douyin-info">
               <span class="douyin-tip">访问原链接查看视频</span>
-              <a :href="video.videoUrl" target="_blank" class="douyin-original-link">
+              <a @click.stop="handleDouyinLinkClick" target="_blank" class="douyin-original-link">
                 <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
                   <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#ffffff" p-id="15975"></path>
                   <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#ffffff" p-id="15976"></path>
@@ -172,11 +172,25 @@
           </div>
 
           <!-- 视频话术 -->
-          <div class="script-container" @click="showScriptCompare" v-if="video.originalScript">
+          <div class="script-container" v-if="video.originalScript">
             <div class="script-header">
               <span class="label">文案：</span>
             </div>
-            <p class="script-content">{{ video.originalScript }}</p>
+            <template v-if="!isConvenientEditing">
+              <p class="script-content"  @click="showConvinientInput" >{{ video.originalScript }}</p>
+            </template>
+            <template v-else>
+              <div class="script-input-wrapper">
+                <el-input class="script-input" v-model="editForm.originalScript" type="textarea" resize="none"></el-input>
+                <div class="script-input-footer">
+                <el-button type="success" size="small" @click="fullScreenEdit">全屏编辑</el-button>
+                <el-button type="primary" size="small" :loading="saveLoading" @click="saveScript">
+                  {{ isMyCopyPage ? '保存' : '保存到我的文案' }}
+                </el-button>
+                <el-button type="default" size="small" @click="closeConvinientInput">关闭</el-button>
+                </div>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -207,7 +221,7 @@
         </el-button>
 
 
-        <!-- <el-button type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button> -->
+        <el-button v-if="!isMyCopyPage" type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button>
       </div>
     </div>
 
@@ -267,7 +281,7 @@
       <template #footer>
         <div class="dialog-footer">
           <template v-if="isEditing">
-            <el-button type="primary" style="margin-right: 10px;" :loading="saveLoading" @click="saveEdits">
+            <el-button type="primary" style="margin-right: 10px;" :loading="saveLoading" @click="saveScript">
               {{ isMyCopyPage? '保存':'保存到我的文案' }}
             </el-button>
             <el-button @click="cancelEdit">关闭</el-button>
@@ -343,6 +357,11 @@ const getVideoMimeType = computed(() => {
     default: return 'video/mp4' // 默认MP4类型
   }
 })
+
+// 视频跳转处理
+const handleDouyinLinkClick = () => {
+  window.open(props.video.videoUrl, '_blank', 'noreferrer')
+}
 
 // 视频播放处理
 const handleVideoPlay = () => {
@@ -526,6 +545,7 @@ const getFileExtension = (filename) => {
 
 // 收藏和编辑状态
 const isFavorite = ref(false)
+const isConvenientEditing = ref(false)
 const favoriteLoading = ref(false)
 const addVideoCopywritingLoading = ref(false)
 const delVideoCopywritingLoading = ref(false)
@@ -547,6 +567,33 @@ const showScriptCompare = () => {
   isEditing.value = true
 }
 
+// 显示便捷编辑
+const showConvinientInput = () => {
+  editForm.value = {
+    title: props.video.title || '',
+    originalScript: props.video.originalScript || ''
+  }
+  isConvenientEditing.value = true
+}
+
+// 关闭便捷编辑
+const closeConvinientInput = () => {
+  isConvenientEditing.value = false
+}
+
+// 全屏编辑
+const fullScreenEdit = () => {
+  compareDialogVisible.value = true
+}
+
+// 保存更改
+const saveScript = () => {
+  saveEdits()
+  compareDialogVisible.value = false
+  isConvenientEditing.value = false
+}
+
+
 // 开始编辑
 const startEdit = () => {
   editForm.value = {
@@ -563,19 +610,14 @@ const cancelEdit = () => {
 
 // 保存编辑
 const saveEdits = async () => {
-  if (!editForm.value.title.trim()) {
-    ElMessage.warning('标题不能为空')
-    return
-  }
   saveLoading.value = true
   try {
     // 构建保存的数据
     let saveData = {
       isCollected: true,
       title: editForm.value.title,
-      originalScript: editForm.value.originalScript
+      content: editForm.value.originalScript
     }
-    console.warn(props.video)
     if (!props.isMyCopyPage){
       saveData.videoId = props.video.id
       await addVideoCopywriting(saveData)
@@ -583,7 +625,7 @@ const saveEdits = async () => {
     } else {
       saveData = { id:props.video.id, videoId: props.video.videoId, ...saveData }
       await updateVideoCopywriting(saveData)
-    ElMessage.success('保存成功')
+      ElMessage.success('保存成功')
     }
 
     // 通知父组件更新
@@ -1009,7 +1051,7 @@ onUnmounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 10;
+  -webkit-line-clamp: 9;
   -webkit-box-orient: vertical;
   border-radius: 10px;
   transition: background-color 0.2s ease;
@@ -1019,6 +1061,33 @@ onUnmounted(() => {
 
 .script-content:hover {
   background-color: #f2f2f2;
+}
+
+.script-input-wrapper {
+  max-height: 230px;
+  width: 100%;
+  height: 180px;
+  border: none;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.script-input {
+  width: 100%;
+  /* height: 100%; */
+  border: none;
+  outline: none;
+}
+
+.script-input-footer {
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  box-sizing: border-box;
 }
 
 /* 操作区域 */
@@ -1095,6 +1164,12 @@ onUnmounted(() => {
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 12px;
+  max-width: 200px;
+  max-height: 40px;
+  -webkit-line-clamp: 2;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .original-link {
@@ -1126,8 +1201,9 @@ onUnmounted(() => {
 
 @media screen and (max-width: 1000px) {
   .video-meta{
-    flex-direction: column;
+    flex-direction: row;
     align-items: start;
+    overflow: hidden;
   }
   .script-content{
       -webkit-line-clamp: 6;
@@ -1177,6 +1253,14 @@ onUnmounted(() => {
         flex-direction: column;
         align-items: start;
     }
+}
+
+.script-input-wrapper :deep(.el-textarea__inner) {
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.8;
+  min-height: 180px !important;
+  height: 100% !important;
 }
 
 .edit-title-input :deep(.el-input__inner) {

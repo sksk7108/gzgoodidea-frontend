@@ -3,7 +3,7 @@
     <div class="header-section">
       <div class="title-section">
         <h2>矩阵管理</h2>
-        <span class="subtitle">管理您的矩阵配置，包括人设、文案风格和关联账号</span>
+        <span class="subtitle">管理您的矩阵配置，包括人设、文案风格和特殊要求</span>
       </div>
       <el-button 
         type="primary" 
@@ -13,72 +13,29 @@
     </div>
 
     <!-- 搜索区域 -->
-    <div class="search-section">
-      <el-input
-        v-model="searchKeyword"
-        placeholder="输入矩阵名称搜索"
-        :prefix-icon="Search"
-        clearable
-        @input="handleSearch"
-      />
+
+    <!-- 矩阵卡片列表 -->
+    <div v-loading="loading" class="matrix-list-container">
+      <template v-if="filteredMatrixList.length > 0">
+        <div class="matrix-card-list">
+          <matrix-card
+            v-for="matrix in filteredMatrixList" 
+            :key="matrix.id" 
+            :matrix="matrix"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          />
+        </div>
+      </template>
+      <el-empty v-else description="暂无矩阵数据" />
     </div>
 
-    <!-- 矩阵列表 -->
-    <el-table
-      v-loading="loading"
-      :data="matrixList"
-      style="width: 100%"
-      border
-      row-key="id"
-    >
-      <el-table-column prop="name" label="矩阵名称" min-width="120" />
-      <el-table-column prop="persona" label="人设" min-width="150" show-overflow-tooltip />
-      <el-table-column prop="style" label="文案风格" min-width="150" show-overflow-tooltip />
-      <el-table-column label="关联账号" min-width="200">
-        <template #default="scope">
-          <el-tag
-            v-for="account in scope.row.accounts"
-            :key="account.id"
-            class="account-tag"
-            type="info"
-            effect="plain"
-          >
-            {{ account.name }}
-          </el-tag>
-          <el-tag v-if="!scope.row.accounts || scope.row.accounts.length === 0" type="info">
-            暂无关联账号
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" min-width="180">
-        <template #default="scope">
-          {{ formatDate(scope.row.createdAt) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="180" fixed="right">
-        <template #default="scope">
-          <el-button 
-            type="primary" 
-            link 
-            :icon="Edit" 
-            @click="handleEdit(scope.row)"
-          >编辑</el-button>
-          <el-button 
-            type="danger" 
-            link 
-            :icon="Delete" 
-            @click="handleDelete(scope.row)"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
     <!-- 分页控件 -->
-    <div class="pagination-container">
+    <div class="pagination-container" v-if="filteredMatrixList.length > 0">
       <el-pagination
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="[8, 16, 24, 32]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
@@ -90,7 +47,9 @@
     <el-dialog
       v-model="dialogVisible"
       :title="formTitle"
-      width="650px"
+      width="80vw"
+      class="edit-dialog"
+      :lock-scroll="false"
       :close-on-click-modal="false"
       @closed="resetForm"
     >
@@ -101,41 +60,29 @@
         label-width="100px"
         label-position="right"
       >
-        <el-form-item label="矩阵名称" prop="name">
+        <el-form-item class="matrix-name" label="矩阵名称" prop="name">
           <el-input v-model="matrixForm.name" placeholder="请输入矩阵名称" />
         </el-form-item>
-        <el-form-item label="人设" prop="persona">
+        <el-form-item label="人设" prop="personConfig">
           <el-input
-            v-model="matrixForm.persona"
+            v-model="matrixForm.personConfig"
             type="textarea"
-            :rows="3"
             placeholder="请描述矩阵的人设特点"
           />
         </el-form-item>
-        <el-form-item label="文案风格" prop="style">
+        <el-form-item label="文案风格" prop="contentStyle">
           <el-input
-            v-model="matrixForm.style"
+            v-model="matrixForm.contentStyle"
             type="textarea"
-            :rows="3"
             placeholder="请描述矩阵的文案风格"
           />
         </el-form-item>
-        <el-form-item label="关联账号" prop="accounts">
-          <el-select
-            v-model="matrixForm.accounts"
-            multiple
-            collapse-tags
-            collapse-tags-tooltip
-            style="width: 100%"
-            placeholder="请选择关联账号"
-          >
-            <el-option
-              v-for="item in accountOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+        <el-form-item label="特殊要求" prop="specialRequests">
+          <el-input
+            v-model="matrixForm.specialRequests"
+            type="textarea"
+            placeholder="请输入特殊要求，如输出格式等"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -153,24 +100,23 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Plus, Search } from '@element-plus/icons-vue'
+import MatrixCard from '@/components/Matrix/MatrixCard.vue'
 import { 
   getMatrixList, 
   getMatrixDetail, 
   createMatrix, 
   updateMatrix, 
-  deleteMatrix,
-  getAccountsList
+  deleteMatrix
 } from '@/api/matrix'
-import { Edit, Delete, Plus, Search } from '@element-plus/icons-vue'
 
 // 状态变量
 const loading = ref(false)
 const submitLoading = ref(false)
 const matrixList = ref([])
-const accountOptions = ref([])
 const total = ref(0)
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(8)
 const searchKeyword = ref('')
 const dialogVisible = ref(false)
 const isEdit = ref(false)
@@ -180,9 +126,9 @@ const currentId = ref(null)
 const matrixFormRef = ref(null)
 const matrixForm = reactive({
   name: '',
-  persona: '',
-  style: '',
-  accounts: []
+  personConfig: '',
+  contentStyle: '',
+  specialRequests: ''
 })
 
 // 表单校验规则
@@ -191,20 +137,30 @@ const formRules = {
     { required: true, message: '请输入矩阵名称', trigger: 'blur' },
     { max: 50, message: '名称长度不能超过50个字符', trigger: 'blur' }
   ],
-  persona: [
+  personConfig: [
     { required: true, message: '请输入人设描述', trigger: 'blur' }
   ],
-  style: [
+  contentStyle: [
     { required: true, message: '请输入文案风格', trigger: 'blur' }
   ]
 }
 
 const formTitle = computed(() => isEdit.value ? '编辑矩阵' : '新增矩阵')
 
+// 过滤后的矩阵列表
+const filteredMatrixList = computed(() => {
+  if (!searchKeyword.value) {
+    return matrixList.value;
+  }
+  
+  return matrixList.value.filter(matrix => 
+    matrix.name.toLowerCase().includes(searchKeyword.value.toLowerCase())
+  );
+});
+
 // 生命周期钩子
 onMounted(() => {
   fetchMatrixList()
-  fetchAccountOptions()
 })
 
 // 获取矩阵列表
@@ -217,24 +173,14 @@ const fetchMatrixList = async () => {
       keyword: searchKeyword.value
     }
     const res = await getMatrixList(params)
-    matrixList.value = res.data.list || []
-    total.value = res.data.total || 0
+    console.log(res)
+    matrixList.value = res.records || []
+    total.value = res.total || 0
   } catch (error) {
     ElMessage.error('获取矩阵列表失败')
     console.error('获取矩阵列表失败:', error)
   } finally {
     loading.value = false
-  }
-}
-
-// 获取账号选项
-const fetchAccountOptions = async () => {
-  try {
-    const res = await getAccountsList()
-    accountOptions.value = res.data || []
-  } catch (error) {
-    ElMessage.error('获取账号列表失败')
-    console.error('获取账号列表失败:', error)
   }
 }
 
@@ -247,19 +193,18 @@ const handleAdd = () => {
 }
 
 // 处理编辑矩阵
-const handleEdit = async (row) => {
+const handleEdit = async (matrix) => {
   isEdit.value = true
-  currentId.value = row.id
+  currentId.value = matrix.id
   dialogVisible.value = true
   
   try {
-    const res = await getMatrixDetail(row.id)
-    const matrixData = res.data
+    const matrixData = await getMatrixDetail(matrix.id)
     
     matrixForm.name = matrixData.name
-    matrixForm.persona = matrixData.persona
-    matrixForm.style = matrixData.style
-    matrixForm.accounts = matrixData.accounts ? matrixData.accounts.map(acc => acc.id) : []
+    matrixForm.personConfig = matrixData.personConfig
+    matrixForm.contentStyle = matrixData.contentStyle
+    matrixForm.specialRequests = matrixData.specialRequests || ''
   } catch (error) {
     ElMessage.error('获取矩阵详情失败')
     console.error('获取矩阵详情失败:', error)
@@ -267,18 +212,19 @@ const handleEdit = async (row) => {
 }
 
 // 处理删除矩阵
-const handleDelete = (row) => {
+const handleDelete = (matrix) => {
   ElMessageBox.confirm(
-    `确定要删除矩阵 "${row.name}" 吗？此操作不可恢复`,
+    `确定要删除矩阵 "${matrix.name}" 吗？此操作不可恢复`,
     '确认删除',
     {
       type: 'warning',
+      'lock-scroll': false,
       confirmButtonText: '确定',
       cancelButtonText: '取消'
     }
   ).then(async () => {
     try {
-      await deleteMatrix(row.id)
+      await deleteMatrix(matrix.id)
       ElMessage.success('删除成功')
       fetchMatrixList()
     } catch (error) {
@@ -301,9 +247,9 @@ const submitForm = async () => {
     try {
       const formData = {
         name: matrixForm.name,
-        persona: matrixForm.persona,
-        style: matrixForm.style,
-        accounts: matrixForm.accounts
+        personConfig: matrixForm.personConfig,
+        contentStyle: matrixForm.contentStyle,
+        specialRequests: matrixForm.specialRequests
       }
       
       if (isEdit.value) {
@@ -331,9 +277,9 @@ const resetForm = () => {
     matrixFormRef.value.resetFields()
   }
   matrixForm.name = ''
-  matrixForm.persona = ''
-  matrixForm.style = ''
-  matrixForm.accounts = []
+  matrixForm.personConfig = ''
+  matrixForm.contentStyle = ''
+  matrixForm.specialRequests = ''
 }
 
 // 处理页码变化
@@ -353,20 +299,6 @@ const handleSizeChange = (val) => {
 const handleSearch = () => {
   currentPage.value = 1
   fetchMatrixList()
-}
-
-// 格式化日期
-const formatDate = (dateString) => {
-  if (!dateString) return '暂无数据'
-  const date = new Date(dateString)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
 }
 </script>
 
@@ -388,6 +320,7 @@ const formatDate = (dateString) => {
 .title-section {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
 .title-section h2 {
@@ -402,30 +335,75 @@ const formatDate = (dateString) => {
   color: #909399;
 }
 
-.search-section {
-  margin-bottom: 20px;
+.filter-section {
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.search-section .el-input {
+.search-input {
   width: 300px;
+}
+
+.matrix-list-container {
+  min-height: 400px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.matrix-card-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+  gap: 20px;
 }
 
 .pagination-container {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
-.account-tag {
-  margin-right: 5px;
-  margin-bottom: 5px;
+:deep(.edit-dialog){
+  max-width: 1000px;
+  height: 70vh;
+  max-height: 700px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-:deep(.el-tag) {
-  margin: 2px;
+:deep(.el-dialog__body){
+  flex: 3;
 }
+
+:deep(.el-dialog__body .el-form){
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-around;
+}
+
+:deep(.el-dialog__body .matrix-name){
+  height: auto !important;
+}
+
+:deep(.el-dialog__body .el-form .el-form-item){
+  height: 100%;
+}
+
+:deep(.el-dialog__body .el-form .el-textarea),
+:deep(.el-dialog__body .el-form .el-textarea__inner)
+{
+  height: 100%;
+}
+
 
 @media (max-width: 768px) {
   .header-section {
@@ -434,8 +412,17 @@ const formatDate = (dateString) => {
     gap: 10px;
   }
   
-  .search-section .el-input {
+  .filter-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .search-input {
     width: 100%;
+  }
+  
+  .matrix-card-list {
+    grid-template-columns: 1fr;
   }
 }
 </style> 

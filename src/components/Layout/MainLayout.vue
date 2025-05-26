@@ -16,8 +16,8 @@
           <el-menu-item index="/videos">视频列表</el-menu-item>
           <el-menu-item index="/favorites">我的文案</el-menu-item>
           <el-menu-item index="/keywords">我的关键词</el-menu-item>
-          <el-menu-item index="/copywriting">智能文案</el-menu-item>
-          <!-- <el-menu-item index="/matrix">矩阵管理</el-menu-item> -->
+          <!-- <el-menu-item index="/copywriting">智能文案</el-menu-item> -->
+          <el-menu-item index="/matrix">矩阵管理</el-menu-item>
           <!-- 隐藏AI话术配置 -->
           <!-- <el-menu-item index="/ai-config">AI话术配置</el-menu-item> -->
         </el-menu>

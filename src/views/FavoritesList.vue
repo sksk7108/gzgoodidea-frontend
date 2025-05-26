@@ -74,7 +74,8 @@ const fetchFavoritesList = async () => {
           return {
             ...video,
           formattedTopic: formatTopicForHTML(video.topic),
-          isFavorite: true // 确保标记为收藏状态
+          isFavorite: true, // 确保标记为收藏状态
+          originalScript: video.content
           }
         })
       })
@@ -122,7 +123,7 @@ const handleSave = (video) => {
   const index = videoList.value.findIndex(item => item.id === video.id)
   if (index !== -1) {
     videoList.value[index].title = video.title
-    videoList.value[index].originalScript = video.originalScript
+    videoList.value[index].originalScript = video.content
   }
 }
 

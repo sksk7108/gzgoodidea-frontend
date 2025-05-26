@@ -486,38 +486,6 @@ const handleSave = (video) => {
   }
 }
 
-const handleApprove = (video) => {
-    ElMessageBox.confirm('确认通过该视频吗？', '提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'info'
-    }).then(async () => {
-        try {
-            await auditVideoStatus(video.id, { status: 1 })
-            ElMessage.success('操作成功')
-            fetchVideoList() // 刷新数据
-        } catch (error) {
-            ElMessage.error('操作失败')
-        }
-    }).catch(() => {})
-}
-
-// 拒绝视频
-const handleReject = (video) => {
-    ElMessageBox.confirm('请输入拒绝原因', '拒绝视频', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-    }).then(async ({ value }) => {
-        try {
-            await auditVideoStatus(video.id, { status: 2 })
-            ElMessage.success('操作成功')
-            fetchVideoList() // 刷新数据
-        } catch (error) {
-            ElMessage.error('操作失败')
-        }
-    }).catch(() => {})
-}
 
 // 删除视频
 const handleDelete = (video) => {
