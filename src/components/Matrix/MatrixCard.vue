@@ -69,7 +69,7 @@
 
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
-import { defineProps, defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps({

@@ -13,6 +13,13 @@ const routes = [
     }
   },
   {
+    path: '/:companyId',
+    component: MainLayout,
+    meta: {
+      requiresAuth: true
+    },
+  },
+  {
     path: '/',
     component: MainLayout,
     meta: {

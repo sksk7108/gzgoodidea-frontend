@@ -19,6 +19,9 @@ export const useUserStore = defineStore('user', {
   getters: {
     isLoggedIn: (state) => !!state.token,
     account: (state) => state.userInfo.account || '',
+    username: (state) => state.userInfo.username || '',
+    avatar: (state) => state.userInfo.avatar || '',
+    company: (state) => state.userInfo.company || '',
   },
 
   actions: {

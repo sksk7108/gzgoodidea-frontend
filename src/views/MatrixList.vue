@@ -51,7 +51,9 @@
       class="edit-dialog"
       :lock-scroll="false"
       :close-on-click-modal="false"
+      :close-on-press-escape="false"
       @closed="resetForm"
+      @submit.native.prevent
     >
       <el-form
         ref="matrixFormRef"
@@ -61,7 +63,7 @@
         label-position="right"
       >
         <el-form-item class="matrix-name" label="矩阵名称" prop="name">
-          <el-input v-model="matrixForm.name" placeholder="请输入矩阵名称" />
+          <el-input v-model="matrixForm.name" placeholder="请输入矩阵名称" @keyup.enter.stop="submitForm" />
         </el-form-item>
         <el-form-item label="人设" prop="personConfig">
           <el-input
@@ -381,6 +383,8 @@ const handleSearch = () => {
 
 :deep(.el-dialog__body){
   flex: 3;
+  max-height: 650px;
+  overflow: hidden;
 }
 
 :deep(.el-dialog__body .el-form){

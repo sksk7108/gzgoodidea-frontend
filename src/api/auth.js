@@ -26,4 +26,28 @@ export function getUserInfo() {
  */
 export function logout() {
   return post('/employee/logout')
+}
+
+/**
+ * 更新用户信息
+ * @param {FormData} data 包含用户名和头像的表单数据
+ * @returns {Promise}
+ */
+export function updateUserProfile(data) {
+  return post('/employee/update-profile', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+/**
+ * 修改密码
+ * @param {Object} data 密码数据
+ * @param {string} data.oldPassword 旧密码
+ * @param {string} data.newPassword 新密码
+ * @returns {Promise}
+ */
+export function updatePassword(data) {
+  return post('/employee/update-password', data)
 } 

@@ -82,7 +82,8 @@
       :title="isEdit ? '编辑关键词' : '新增关键词'"
       width="500px"
       :lock-scroll="false"
-      :close-on-click-modal="false"
+      :close-on-click-modal="true"
+      :close-on-press-escape="false"
     >
       <el-form
         ref="keywordFormRef"
@@ -91,7 +92,7 @@
         label-width="100px"
       >
         <el-form-item label="关键词" prop="content">
-          <el-input v-model="keywordForm.content" placeholder="请输入关键词" />
+          <el-input v-model="keywordForm.content" placeholder="请输入关键词"/>
         </el-form-item>
         <el-form-item label="查询时效(天)" prop="expiryDays">
           <el-input-number

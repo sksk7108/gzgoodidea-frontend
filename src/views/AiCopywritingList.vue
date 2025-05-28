@@ -3,13 +3,6 @@
   <div class="video-list">
     <h2 class="page-title">智能文案</h2>
 
-    <div style="width: 200px;height: 200px;">
-      <video width="640" height="380" controls>
-        <source src="https://v95-web-sz.douyinvod.com/b1e08471557f1b2602f36feb9ffc52c4/68305604/video/tos/cn/tos-cn-ve-15/o8JIeHsQQFpDIgvE9geGeC82wTALglfAZIVgIH/?a=6383&ch=11&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=1179&bt=1179&cs=0&ds=4&ft=GZnU0RqeffPdXP~ka1jNvAq-antLjrKxnExCRka0Nig_ejVhWL6&mime_type=video_mp4&qs=0&rc=ZjtnM2Y4Z2Q8NWY1OzQ6OUBpM3h3bnQ5cjV5MzMzNGkzM0BfNmJhLzVhNTAxMV41MS01YSNzYGM1MmRjcGthLS1kLS9zcw%3D%3D&btag=c0000e00028000&cquery=100B_100x_100z_100o_101n&dy_q=1747987324&feature_id=46a7bb47b4fd1280f3d3825bf2b29388&l=202505231602037981B7457CB7EE0746BC" type="video/mp4">
-        您的浏览器不支持查看此文件
-      </video>
-    </div>
-
     <!-- 分页 -->
     <div class="pagination" v-if="total > 0">
       <el-pagination
@@ -25,7 +18,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { getVideoList, deleteVideo, toggleVideoFavorite } from '@/api/video'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 加载状态
@@ -83,60 +75,7 @@ const fetchSavedList = async () => {
   }
 }
 
-// 格式化topic为HTML
-function formatTopicForHTML(topic) {
-  if (!topic) return [];
-  // 按#分割字符串成数组,过滤掉空字符串
-  return topic.split('#').filter(item => item).map(item => '#'+item);
-}
 
-// 处理视频收藏
-const handleFavorite = async (video) => {
-  try {
-    await toggleVideoFavorite(video.id, video.isFavorite)
-    
-    // 更新本地视频列表数据
-    const index = videoList.value.findIndex(item => item.id === video.id)
-    if (index !== -1) {
-      videoList.value[index] = { ...videoList.value[index], ...video }
-    }
-  } catch (error) {
-    console.error('收藏操作失败:', error)
-  }
-}
-
-// 处理视频保存
-const handleSave = (video) => {
-  // 更新本地视频列表数据
-  const index = videoList.value.findIndex(item => item.id === video.id)
-  if (index !== -1) {
-    videoList.value[index] = { ...videoList.value[index], ...video }
-    // 格式化topic
-    videoList.value[index].formattedTopic = formatTopicForHTML(video.topic)
-  }
-}
-
-// 删除视频
-const handleDelete = (video) => {
-  ElMessageBox.confirm('确认删除该视频吗？此操作不可恢复。', '警告', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).then(async () => {
-    try {
-      await deleteVideo(video.id)
-      ElMessage.success('删除成功')
-      // 从列表中移除
-      videoList.value = videoList.value.filter(item => item.id !== video.id)
-      total.value--
-      if (videoList.value.length === 0 && total.value > 0) {
-        fetchSavedList()
-      }
-    } catch (error) {
-      ElMessage.error('删除失败')
-    }
-  }).catch(() => {})
-}
 
 // 处理分页
 const handlePageChange = (page) => {

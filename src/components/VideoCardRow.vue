@@ -9,27 +9,7 @@
             <div class="placeholder-text">暂无视频</div>
           </div>
         </template>
-        <template v-else-if="!video.originalVideo || video.hotSource === '抖音'">
-        <div class="video-placeholder douyin-placeholder">
-          <div class="douyin-link-container">
-            <svg class="douyin-icon" viewBox="0 0 1024 1024" width="40" height="40">
-              <path d="M937.1 423.4c-92 0-165.9-71.5-172.6-161.5h-86.2v455c0 47.8-38.8 86.5-86.5 86.5-47.8 0-86.5-38.8-86.5-86.5s38.8-86.5 86.5-86.5c9.4 0 18.8 1.6 27.5 4.7V546c-9.1-1.2-18.1-1.9-27.5-1.9-105.6 0-191.1 85.5-191.1 191.1S486.2 926.2 591.8 926.2c105.6 0 191.1-85.5 191.1-191.1V453.7c31.5 22.1 69.6 35.1 111 35.1V423.4h43.2-0.1z m0 0" fill="#ff0050"></path>
-              <path d="M778.7 423.4v65.4c-41.3 0-79.5-13-111-35.1v281.6c0 105.6-85.5 191.1-191.1 191.1-105.6 0-191.1-85.5-191.1-191.1S371.1 544 476.7 544c9.4 0 18.3 0.6 27.5 1.9v89.1c-8.7-3.1-18.1-4.7-27.5-4.7-47.8 0-86.5 38.8-86.5 86.5s38.8 86.5 86.5 86.5c47.8 0 86.5-38.8 86.5-86.5V261.9h86.2c6.8 90.1 80.6 161.5 172.6 161.5h-43.2z" fill="#000000"></path>
-            </svg>
-            <div class="douyin-info">
-              <span class="douyin-tip">访问原链接查看视频</span>
-              <a @click.stop="handleDouyinLinkClick" target="_blank" class="douyin-original-link">
-                <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
-                  <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#ffffff" p-id="15975"></path>
-                  <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#ffffff" p-id="15976"></path>
-                </svg>
-                {{ formatUrl(video.originalLink || video.videoUrl) }}
-              </a>
-            </div>
-          </div>
-        </div>
-      </template>
-        <template v-else-if="!video.originalVideo || isSmallDouyinVideo">
+        <template v-else-if="!video.originalVideo || video.hotSource === '抖音'" >
           <div class="video-placeholder douyin-placeholder">
             <div class="douyin-link-container">
               <svg class="douyin-icon" viewBox="0 0 1024 1024" width="40" height="40">
@@ -38,7 +18,13 @@
               </svg>
               <div class="douyin-info">
                 <span class="douyin-tip">访问原链接查看视频</span>
-                <a :href="video.videoUrl" target="_blank" class="douyin-original-link">查看原视频</a>
+                <a @click.stop="handleDouyinLinkClick" target="_blank" class="douyin-original-link">
+                  <svg t="1747032562788" class="link-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15974" width="16" height="16">
+                    <path d="M574 665.4c-3.1-3.1-8.2-3.1-11.3 0L446.5 781.6c-53.8 53.8-144.6 59.5-204 0-59.5-59.5-53.8-150.2 0-204l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3l-39.8-39.8c-3.1-3.1-8.2-3.1-11.3 0L191.4 526.5c-84.6 84.6-84.6 221.5 0 306s221.5 84.6 306 0l116.2-116.2c3.1-3.1 3.1-8.2 0-11.3L574 665.4zM832.6 191.4c-84.6-84.6-221.5-84.6-306 0L410.4 307.6c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c53.8-53.8 144.6-59.5 204 0 59.5 59.5 53.8 150.2 0 204L665.4 562.7c-3.1 3.1-3.1 8.2 0 11.3l39.8 39.8c3.1 3.1 8.2 3.1 11.3 0l116.2-116.2c84.5-84.6 84.5-221.5-0.1-306.2z" fill="#ffffff" p-id="15975"></path>
+                    <path d="M610.1 372.3c-3.1-3.1-8.2-3.1-11.3 0L372.3 598.7c-3.1 3.1-3.1 8.2 0 11.3l39.6 39.6c3.1 3.1 8.2 3.1 11.3 0l226.4-226.4c3.1-3.1 3.1-8.2 0-11.3l-39.5-39.6z" fill="#ffffff" p-id="15976"></path>
+                  </svg>
+                  {{ formatUrl(video.originalVideo || video.videoUrl) }}
+                </a>
               </div>
             </div>
           </div>
@@ -114,7 +100,7 @@
           <div class="video-meta">
             <span class="source">{{ video.hotSource }}</span>
             <div class="videolink">
-              <a :href="video.videoUrl" target="_blank" class="original-link">
+              <a @click.stop="handleDouyinLinkClick" target="_blank" class="original-link">
                 <svg t="1747962731701" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5478" width="16" height="16"><path d="M62.296463 576.23471l64.234709-64.23471 85.676565 85.646279-42.853425 42.853425a121.140424 121.140424 0 0 0 0 171.292559l42.853425 42.853425a121.140424 121.140424 0 0 0 171.292559 0l214.145983-214.145984a121.140424 121.140424 0 0 0 0-171.322844l-42.823139-42.823139a120.080445 120.080445 0 0 0-24.440081-18.413345l88.705075-88.67479 85.64628 85.64628a211.995741 211.995741 0 0 1 0 299.822548l-256.969124 256.969123a211.995741 211.995741 0 0 1-299.822548 0l-85.646279-85.646279a211.995741 211.995741 0 0 1 0-299.822548z" fill="#E13455" p-id="5479"></path><path d="M961.703537 447.76529l-64.234709 64.23471-85.676565-85.646279 42.853425-42.853425a121.140424 121.140424 0 0 0 0-171.292559l-42.853425-42.853425a121.140424 121.140424 0 0 0-171.292559 0l-214.145983 214.145984a121.140424 121.140424 0 0 0 0 171.322844l42.823139 42.823139a120.080445 120.080445 0 0 0 24.440081 18.413345L404.911866 704.734414l-85.64628-85.64628a211.995741 211.995741 0 0 1 0-299.822548l256.969124-256.969123a211.995741 211.995741 0 0 1 299.822548 0l85.646279 85.646279a211.995741 211.995741 0 0 1 0 299.822548z" fill="#409eff" p-id="5480"></path></svg>
                 <span>查看原视频</span>
               </a>
@@ -221,7 +207,7 @@
         </el-button>
 
 
-        <el-button v-if="!isMyCopyPage" type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button>
+       <el-button v-if="!isMyCopyPage" type="danger" size="small" style="margin: 0;" @click="handleDelete">删除</el-button>
       </div>
     </div>
 
@@ -343,7 +329,11 @@ const currentlyPlaying = inject('currentlyPlaying', { videoId: null })
 // 视频URL和MIME类型处理
 const videoUrl = computed(() => {
   if (!props.video.originalVideo || !shouldLoadVideo.value) return ''
-  return `/api/videos/file/${props.video.originalVideo}`
+  if (props.video.hotSource === '抖音') {
+    return props.video.videoUrl
+  } else {
+    return `/api/videos/file/${props.video.originalVideo}`
+  }
 })
 
 // 获取视频MIME类型
