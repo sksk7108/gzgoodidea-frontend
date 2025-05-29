@@ -47,7 +47,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="formTitle"
-      width="80vw"
+      fullscreen
       class="edit-dialog"
       :lock-scroll="false"
       :close-on-click-modal="false"
@@ -357,9 +357,11 @@ const handleSearch = () => {
 }
 
 .matrix-card-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
-  gap: 20px;
+  /* display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); */
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .pagination-container {
@@ -373,9 +375,6 @@ const handleSearch = () => {
 }
 
 :deep(.edit-dialog){
-  max-width: 1000px;
-  height: 70vh;
-  max-height: 700px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

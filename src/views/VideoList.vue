@@ -375,7 +375,7 @@ const fetchTagOptions = async () => {
     }))
   }
   tagOptions.value.unshift({
-    label: '全部',
+    label: '全部视频',
     value: ''
   })
 }

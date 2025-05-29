@@ -10,6 +10,9 @@ const REMEMBER_USERNAME_KEY = 'remember_username'
 const REMEMBER_PASSWORD_KEY = 'remember_password'
 // 存储的密码键名
 const STORED_PASSWORD_KEY = 'stored_password'
+// 记住公司ID
+const REMEMBER_COMPANY_ID_KEY = 'remember_company_id'
+
 
 /**
  * 存储 Token 到本地
@@ -56,6 +59,22 @@ export function getUserInfo() {
  */
 export function removeUserInfo() {
   sessionStorage.removeItem(USER_INFO_KEY)
+}
+
+/**
+ * 设置记住公司ID
+ * @param {string} companyId
+ */
+export function setRememberCompanyId(companyId) {
+  localStorage.setItem(REMEMBER_COMPANY_ID_KEY, companyId)
+}
+
+/**
+ * 获取记住的公司ID
+ * @returns {string|null}
+ */
+export function getRememberCompanyId() {
+  return localStorage.getItem(REMEMBER_COMPANY_ID_KEY)
 }
 
 /**

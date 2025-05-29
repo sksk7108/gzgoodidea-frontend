@@ -1,23 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/components/Layout/MainLayout.vue'
 import Login from '@/views/Login.vue'
-import { getToken } from '@/utils/auth'
+import { getToken, getRememberCompanyId } from '@/utils/auth'
+import { companyConfig } from '@/config/company-config'
+import { ElMessage } from 'element-plus'
 
 const routes = [
   {
     path: '/login',
+    redirect: '/login/VT-10002'
+  },
+  {
+    path: '/login/:loginCompanyId',
     name: 'Login',
     component: Login,
     meta: {
       requiresAuth: false
     }
-  },
-  {
-    path: '/:companyId',
-    component: MainLayout,
-    meta: {
-      requiresAuth: true
-    },
   },
   {
     path: '/',
@@ -28,36 +27,40 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/videos'
+        redirect: to => {
+          // 默认重定向到当前公司ID的视频页面
+          // return { path: `${companyConfig[getRememberCompanyId()].indexPath}` }
+          return { path: `${getRememberCompanyId()? companyConfig[getRememberCompanyId()].indexPath : '/login'}` }
+        }
       },
       {
-        path: 'videos',
-        name: 'Videos',
+        path: 'index',
+        name: 'CompanyIndex',
         component: () => import('@/views/VideoList.vue')
       },
       {
         path: 'favorites',
-        name: 'Favorites',
+        name: 'CompanyFavorites',
         component: () => import('@/views/FavoritesList.vue')
       },
       {
         path: 'copywriting',
-        name: 'Copywriting',
+        name: 'CompanyCopywriting',
         component: () => import('@/views/AiCopywritingList.vue')
       },
       {
         path: 'keywords',
-        name: 'Keywords',
+        name: 'CompanyKeywords',
         component: () => import('@/views/KeywordList.vue')
       },
       {
         path: 'matrix',
-        name: 'Matrix',
+        name: 'CompanyMatrix',
         component: () => import('@/views/MatrixList.vue')
       },
       {
         path: 'ai-config',
-        name: 'AIConfig',
+        name: 'CompanyAIConfig',
         component: () => import('@/views/AIConfig.vue'),
         meta: {
           hidden: true // 标记为隐藏，不在导航菜单中显示
@@ -74,18 +77,30 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
+  console.log(to.path)
+  // 检查公司ID是否有效
+  if (to.params.loginCompanyId && !companyConfig[to.params.loginCompanyId]) {
+    // 如果公司ID无效，重定向到默认公司
+    next({ path: '/login/VT-10002' })
+    return
+  }
+
+  // 身份验证逻辑
   const token = getToken() // 检查是否有token
-  
+
   if (to.meta.requiresAuth && !token) {
     // 需要认证但未登录，重定向到登录页
-    next({ name: 'Login' })
-  } else if (to.name === 'Login' && token) {
-    // 已登录用户访问登录页，重定向到首页
-    next({ name: 'Videos' })
-  } else {
+    next({ path: `/login/${getRememberCompanyId() || 'VT-10002'}` })
+  } else if (to.path.startsWith('/login')) {
     next()
+  } else {
+    if (companyConfig[getRememberCompanyId()].permittedPaths.includes(to.path)) {
+      next()
+    } else {
+      ElMessage.error('您没有权限访问该页面，已自动跳转至首页')
+      next({ path: `${companyConfig[getRememberCompanyId()].indexPath}` })
+    }
   }
-  next()
 })
 
 export default router 

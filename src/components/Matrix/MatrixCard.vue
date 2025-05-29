@@ -22,9 +22,9 @@
       </div>
     </div>
     <div class="matrix-card-content">
-      <div class="matrix-info-item" @click="showDetailDialog('personConfig', '人设')">
+      <div class="matrix-info-item" @click="showDetailDialog('personConfig', '矩阵人设')">
         <div class="info-label">
-          人设
+          矩阵人设
         </div>
         <div class="info-value">{{ matrix.personConfig }}</div>
       </div>
@@ -129,8 +129,8 @@ const formatDate = (dateString) => {
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  height: 65vh;
-  max-height: 620px;
+  height: 80vh;
+  max-height: 750px;
 }
 
 .matrix-card:hover {
@@ -150,7 +150,7 @@ const formatDate = (dateString) => {
   font-size: 18px;
   font-weight: 600;
   color: #303133;
-  margin-left: 12px;
+  margin-left: 7px;
 }
 
 .matrix-actions {
@@ -159,12 +159,12 @@ const formatDate = (dateString) => {
 }
 
 .matrix-card-content {
-  padding: 15px;
+  padding: 5px 10px;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-height: 71%;
+  max-height: 80%;
 }
 
 .matrix-card-content>div{
@@ -173,14 +173,14 @@ const formatDate = (dateString) => {
 
 .matrix-info-item {
   margin-bottom: 12px;
-  padding: 12px;
+  padding: 5px 12px;
   border-radius: 6px;
   background-color: #f9f9f9;
   border: 1px solid #ebeef5;
   transition: all 0.3s;
   cursor: pointer;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
 }
 
@@ -194,10 +194,10 @@ const formatDate = (dateString) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  /* margin-bottom: 8px; */
   font-weight: 600;
   color: #606266;
-  width: 80px;
+  /* width: 80px; */
 }
 
 .click-hint {
@@ -213,21 +213,22 @@ const formatDate = (dateString) => {
 }
 
 .info-value {
-  font-size: 14px;
+  font-size: 15px;
   color: #606266;
-  line-height: 1.6;
+  line-height: 1.7;
   word-break: break-word;
-  max-height: 80px;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
+  /* display: -webkit-box;
   -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical; */
   background-color: #fff;
   padding: 8px;
   border-radius: 4px;
   border: 1px solid #ebeef5;
   flex: 1;
+  text-align: left;
+  text-indent: 2em;
 }
 
 .matrix-card-footer {

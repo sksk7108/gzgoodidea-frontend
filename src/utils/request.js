@@ -142,11 +142,12 @@ export function get(url, params) {
 }
 
 // 封装 POST 请求
-export function post(url, data) {
+export function post(url, data, config) {
   return service({
     url,
     method: 'post',
-    data
+    data,
+    ...config
   })
 }
 

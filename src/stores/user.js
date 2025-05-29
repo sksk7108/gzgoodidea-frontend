@@ -4,6 +4,7 @@ import { login, getUserInfo, logout } from '@/api/auth'
 import { 
   setToken, getToken, removeToken, 
   setUserInfo, getUserInfo as getStoredUserInfo, removeUserInfo, clearAuth,
+  setRememberCompanyId, getRememberCompanyId,
   setRememberUsername, getRememberUsername,
   setRememberPassword, getRememberPassword,
   setStoredPassword, getStoredPassword
@@ -19,9 +20,10 @@ export const useUserStore = defineStore('user', {
   getters: {
     isLoggedIn: (state) => !!state.token,
     account: (state) => state.userInfo.account || '',
-    username: (state) => state.userInfo.username || '',
+    username: (state) => state.userInfo.employeeName || '',
     avatar: (state) => state.userInfo.avatar || '',
-    company: (state) => state.userInfo.company || '',
+    company: (state) => state.userInfo.tenantName || '',
+    companyId: (state) => state.userInfo.bid || '',
   },
 
   actions: {
@@ -58,20 +60,23 @@ export const useUserStore = defineStore('user', {
     },
 
     // 登录操作
-    async login(loginForm) {
+    async login(companyId,loginForm) {
       try {
         const { account, password, remember } = loginForm
         // 只发送用户名和密码给后端，不发送记住密码标记
-        const response = await login({ account, password })
+        const response = await login(companyId,{ account, password })
         
         // 保存token
         this.setToken(response.token)
         
         // 保存用户信息
-        this.setUserInfo(response.userInfo || { account })
+        this.setUserInfo({ account, avatar: response.avatar, employeeName: response.employeeName, bid: response.bid, tenantName: response.tenantName })
         
         // 保存记住登录信息
         this.setRememberMe(remember, account, password)
+        
+        // 保存记住公司ID
+        setRememberCompanyId(response.bid)
         
         return response
       } catch (error) {

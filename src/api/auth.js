@@ -4,12 +4,13 @@ import { post, get } from '@/utils/request'
 /**
  * 用户登录
  * @param {Object} data 登录参数
+ * @param {string} companyId 公司ID
  * @param {string} data.account 用户名
  * @param {string} data.password 密码
  * @returns {Promise}
  */
-export function login(data) {
-  return post('/employee/login', data)
+export function login(companyId,data) {
+  return post(`/employee/login/${companyId}`, data)
 }
 
 /**
@@ -34,7 +35,7 @@ export function logout() {
  * @returns {Promise}
  */
 export function updateUserProfile(data) {
-  return post('/employee/update-profile', data, {
+  return post('/employee/updateProfile', data, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

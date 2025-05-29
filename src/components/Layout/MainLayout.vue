@@ -3,24 +3,7 @@
   <div class="main-layout">
     <el-container>
       <el-header class="header">
-        <img src="@/assets/img/logo.png" class="logo-img">
-        <div class="logo">
-            爆米热点</div>
-        <el-menu
-          mode="horizontal"
-          :router="true"
-          :ellipsis="false"
-          :default-active="activeMenu"
-          class="menu"
-        >
-          <el-menu-item index="/videos">视频列表</el-menu-item>
-          <el-menu-item index="/favorites">我的文案</el-menu-item>
-          <el-menu-item index="/keywords">我的关键词</el-menu-item>
-          <el-menu-item index="/matrix">矩阵管理</el-menu-item>
-          <el-menu-item index="/copywriting">智能文案</el-menu-item>
-          <!-- 隐藏AI话术配置 -->
-          <!-- <el-menu-item index="/ai-config">AI话术配置</el-menu-item> -->
-        </el-menu>
+        <component :is="menuComponent" :companyConfig="currentCompanyConfig"></component>
         
         <!-- 用户信息和退出按钮 -->
         <div class="user-actions">
@@ -28,17 +11,17 @@
             <div class="user-info">
               <el-avatar :size="40" class="user-avatar"> 
                 <div class="avatar-img" v-if="userStore.avatar">
-                  <img src="/avatar-demo.jpg" style="width: 100%;height: 100%;" alt="用户头像">
+                  <img :src="avatarUrl" style="width: 100%;height: 100%;" alt="用户头像">
                 </div>
                 <svg t="1748311421152" v-else class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6195" width="48" height="48"><path d="M512 85.333333C276.48 85.333333 85.333333 276.48 85.333333 512s191.146667 426.666667 426.666667 426.666667 426.666667-191.146667 426.666667-426.666667S747.52 85.333333 512 85.333333zM301.653333 779.946667c18.346667-38.4 130.133333-75.946667 210.346667-75.946667s192.426667 37.546667 210.346667 75.946667A336.768 336.768 0 0 1 512 853.333333c-79.36 0-152.32-27.306667-210.346667-73.386666z m481.706667-61.866667c-61.013333-74.24-209.066667-99.413333-271.36-99.413333s-210.346667 25.173333-271.36 99.413333A339.2 339.2 0 0 1 170.666667 512c0-188.16 153.173333-341.333333 341.333333-341.333333s341.333333 153.173333 341.333333 341.333333c0 77.653333-26.453333 148.906667-69.973333 206.08zM512 256c-82.773333 0-149.333333 66.56-149.333333 149.333333S429.226667 554.666667 512 554.666667s149.333333-66.56 149.333333-149.333334S594.773333 256 512 256z m0 213.333333c-35.413333 0-64-28.586667-64-64S476.586667 341.333333 512 341.333333s64 28.586667 64 64S547.413333 469.333333 512 469.333333z" fill="#e6e6e6" p-id="6196"></path></svg>
               </el-avatar>
               <div class="user-details">
                 <div class="company-info">
                   <el-tag size="small" type="primary" class="role">公司</el-tag>
-                  <span class="company-name">{{ userStore.company || '无忧传媒' }}</span>
+                  <span class="company-name">{{ userStore.company || '暂无关联公司' }}</span>
                 </div>
                 <div class="user-name-container">
-                  <el-tag size="small" type="success" class="role">{{ userStore.role || '员工' }}</el-tag>
+                  <el-tag size="small" type="success" class="role">员工</el-tag>
                   <span class="username">{{ userStore.username? userStore.username : userStore.account }}</span>
                 </div>
               </div>
@@ -49,9 +32,9 @@
                 <el-dropdown-item command="profile">
                   <el-icon><User /></el-icon>修改用户信息
                 </el-dropdown-item>
-                <el-dropdown-item command="password">
+                <!-- <el-dropdown-item command="password">
                   <el-icon><Lock /></el-icon>修改密码
-                </el-dropdown-item>
+                </el-dropdown-item> -->
                 <el-dropdown-item divided command="logout">
                   <el-icon><SwitchButton /></el-icon>退出登录
                 </el-dropdown-item>
@@ -79,7 +62,7 @@
           <div class="avatar-uploader">
             <el-avatar :size="80" class="preview-avatar">
               <img v-if="avatarPreview" :src="avatarPreview" style="width: 100%; height: 100%;" alt="用户头像">
-              <img v-else-if="userStore.avatar" src="/avatar-demo.jpg" style="width: 100%; height: 100%;" alt="用户头像">
+              <img v-else-if="avatarUrl" :src="avatarUrl" style="width: 100%; height: 100%;" alt="用户头像">
               <el-icon v-else><UserFilled /></el-icon>
             </el-avatar>
             <el-upload
@@ -159,18 +142,20 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores'
-import { ArrowDown, User, Lock, SwitchButton, UserFilled } from '@element-plus/icons-vue'
+import { ArrowDown, User, SwitchButton, UserFilled } from '@element-plus/icons-vue'
 import { updateUserProfile, updatePassword } from '@/api/auth'
+import { getRememberCompanyId } from '@/utils/auth'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
+import { companyConfig } from '@/config/company-config'
+import MenuWy1001 from '@/components/header/Menu-wy1001.vue'
+import MenuWy1002 from '@/components/header/Menu-wy1002.vue'
 
-const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
-const activeMenu = computed(() => route.path)
 
 // 对话框状态
 const profileDialogVisible = ref(false)
@@ -187,8 +172,28 @@ const cropperRef = ref(null)
 // 头像预览
 const avatarPreview = ref('')
 const avatarFile = ref(null)
+const avatarUrl = computed(() => {
+  return '/api/employee/avatar/' + userStore.avatar
+})
 const cropperImage = ref('')
 const coordinates = ref(null)
+
+
+// 公司配置
+const currentCompanyConfig = computed(() => {
+  const companyId = userStore.companyId || 'VT-10002'
+  return companyConfig[companyId] || companyConfig['VT-10002']
+})
+
+// 根据公司配置动态选择菜单组件
+const menuComponent = computed(() => {
+  const componentName = currentCompanyConfig.value.menuComponent || 'MenuWy1001'
+  const components = {
+    'MenuWy1001': MenuWy1001,
+    'MenuWy1002': MenuWy1002
+  }
+  return components[componentName] || MenuWy1001
+})
 
 // 个人资料表单
 const profileForm = reactive({
@@ -293,8 +298,6 @@ const showPasswordDialog = () => {
 
 // 处理头像变更
 const handleAvatarChange = (file) => {
-  ElMessage.warning('功能暂未开放')
-  return
   // 首先检查文件类型
   const isImage = file.raw.type.indexOf('image/') !== -1
   const isJPG = file.raw.type === 'image/jpeg'
@@ -372,10 +375,8 @@ const confirmCrop = () => {
 // 提交个人资料表单
 const submitProfile = async () => {
   if (!profileFormRef.value) return
-
-  ElMessage.warning('功能暂未开放')
-  return
   await profileFormRef.value.validate(async (valid) => {
+    console.log('valid', valid)
     if (!valid) return
     
     profileSubmitting.value = true
@@ -383,24 +384,23 @@ const submitProfile = async () => {
     try {
       // 创建表单数据
       const formData = new FormData()
-      formData.append('username', profileForm.username)
+      formData.append('employeeName', profileForm.username)
       
       if (avatarFile.value) {
-        formData.append('avatar', avatarFile.value)
+        formData.append('file', avatarFile.value)
       }
-
-      console.log(formData.get('avatar'))
       
       // 调用API更新用户信息
-      // const response = await updateUserProfile(formData)
-      const response = null
+      const response = await updateUserProfile(formData)
       
       // 更新用户信息
       const updatedUserInfo = {
         ...userStore.userInfo,
-        username: profileForm.username,
-        avatar: response.avatar || avatarPreview.value || userStore.avatar
+        employeeName: profileForm.username,
+        avatar: response || userStore.avatar
       }
+
+      console.log('updatedUserInfo', updatedUserInfo)
       
       userStore.setUserInfo(updatedUserInfo)
       
@@ -459,7 +459,7 @@ const handleLogout = () => {
     try {
       await userStore.logout()
       ElMessage.success('已退出登录')
-      router.push('/login')
+      router.push(`/login/${getRememberCompanyId() || 'VT-10001'}`)
     } catch (error) {
       ElMessage.error('退出登录失败')
     }
@@ -506,15 +506,7 @@ const handleLogout = () => {
   margin-right: 3px;
 }
 
-.menu {
-  min-width: 200px;
-  overflow: scroll;
-  transition: all 0.3s linear;
-}
 
-.menu::-webkit-scrollbar{
-  display: none;
-}
 
 .user-actions {
   display: flex;
