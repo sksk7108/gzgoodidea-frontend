@@ -4,7 +4,7 @@
     <!-- 筛选区域 -->
     <el-card class="filter-section">
       <div class="filter-header">
-        <div class="source-label">热门标签：</div>
+        <div class="source-label">关键词：</div>
         <el-button type="text" @click="resetFilter">清空筛选</el-button>
       </div>
       
@@ -12,7 +12,7 @@
       <div class="tag-search">
         <el-input
           v-model="tagSearchKeyword"
-          placeholder="搜索标签关键字"
+          placeholder="搜索关键字"
           clearable
           @input="filterTags"
           prefix-icon="el-icon-search"
@@ -50,7 +50,7 @@
       
       <!-- 选中的多标签展示 -->
       <div class="selected-tags" v-if="selectedTags.length > 0">
-        <div class="source-label">已选标签：</div>
+        <div class="source-label">已选关键词：</div>
         <div class="selected-tags-container">
           <el-tag
             v-for="tag in selectedTags"
@@ -281,21 +281,6 @@ const sourceOptions = [
     value: '抖音',
     png_src: '/douyin.png'
   }
-  // {
-  //   label: '快手',
-  //   value: '快手',
-  //   png_src: '/kuaishou.png'
-  // },
-  // {
-  //   label: '小红书',
-  //   value: '小红书',
-  //   png_src: '/xiaohongshu.png'
-  // },
-  // {
-  //   label: 'B站',
-  //   value: 'B站',
-  //   png_src: '/bilibili.png'
-  // }
 ]
 
 function formatTopicForHTML(topic) {
@@ -375,7 +360,7 @@ const fetchTagOptions = async () => {
     }))
   }
   tagOptions.value.unshift({
-    label: '全部视频',
+    label: '全部',
     value: ''
   })
 }

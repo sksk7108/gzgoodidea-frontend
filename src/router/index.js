@@ -3,7 +3,6 @@ import MainLayout from '@/components/Layout/MainLayout.vue'
 import Login from '@/views/Login.vue'
 import { getToken, getRememberCompanyId } from '@/utils/auth'
 import { companyConfig } from '@/config/company-config'
-import { ElMessage } from 'element-plus'
 
 const routes = [
   {
@@ -28,35 +27,46 @@ const routes = [
       {
         path: '',
         redirect: to => {
-          // 默认重定向到当前公司ID的视频页面
+          // 默认重定向到当前公司ID的首页
           // return { path: `${companyConfig[getRememberCompanyId()].indexPath}` }
-          return { path: `${getRememberCompanyId()? companyConfig[getRememberCompanyId()].indexPath : '/login'}` }
+          return { path: `${companyConfig[getRememberCompanyId()]? companyConfig[getRememberCompanyId()].indexPath : '/login'}` }
         }
       },
       {
         path: 'index',
         name: 'CompanyIndex',
-        component: () => import('@/views/VideoList.vue')
+        component: () => import('@/views/VideoList.vue'),
+        meta: {title: '视频列表'}
       },
       {
         path: 'favorites',
         name: 'CompanyFavorites',
-        component: () => import('@/views/FavoritesList.vue')
+        component: () => import('@/views/FavoritesList.vue'),
+        meta: {title: '我的收藏'}
       },
       {
         path: 'copywriting',
         name: 'CompanyCopywriting',
-        component: () => import('@/views/AiCopywritingList.vue')
+        component: () => import('@/views/AiCopywritingList.vue'),
+        meta: {title: '智能文案'}
       },
       {
         path: 'keywords',
         name: 'CompanyKeywords',
-        component: () => import('@/views/KeywordList.vue')
+        component: () => import('@/views/KeywordList.vue'),
+        meta: {title: '我的关键词'}
+      },
+      {
+        path: 'benchmark-accounts',
+        name: 'BenchmarkAccounts',
+        component: () => import('@/views/BenchmarkAccounts.vue'),
+        meta: {title: '对标账号'}
       },
       {
         path: 'matrix',
         name: 'CompanyMatrix',
-        component: () => import('@/views/MatrixList.vue')
+        component: () => import('@/views/MatrixList.vue'),
+        meta: {title: '矩阵管理'}
       },
       {
         path: 'ai-config',
@@ -67,6 +77,11 @@ const routes = [
         }
       }
     ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/404.vue')
   }
 ]
 
@@ -77,7 +92,7 @@ const router = createRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  console.log(to.path)
+  document.title =to.meta.title? `爆米热点 - ${to.meta.title}`:'爆米热点'
   // 检查公司ID是否有效
   if (to.params.loginCompanyId && !companyConfig[to.params.loginCompanyId]) {
     // 如果公司ID无效，重定向到默认公司
@@ -97,8 +112,7 @@ router.beforeEach((to, from, next) => {
     if (companyConfig[getRememberCompanyId()].permittedPaths.includes(to.path)) {
       next()
     } else {
-      ElMessage.error('您没有权限访问该页面，已自动跳转至首页')
-      next({ path: `${companyConfig[getRememberCompanyId()].indexPath}` })
+      next({path: '/404'})
     }
   }
 })

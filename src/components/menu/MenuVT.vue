@@ -12,6 +12,7 @@
         <el-menu-item :index="`/keywords`">我的关键词</el-menu-item>
         <el-menu-item :index="`/index`">视频列表</el-menu-item>
         <el-menu-item :index="`/favorites`">我的收藏</el-menu-item>
+        <el-menu-item :index="`/benchmark-accounts`">对标账号</el-menu-item>
         <el-menu-item :index="`/matrix`">矩阵管理</el-menu-item>
         <!-- <el-menu-item :index="`/copywriting`">智能文案</el-menu-item> -->
         <!-- 隐藏AI话术配置 -->

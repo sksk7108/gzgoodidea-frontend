@@ -6,6 +6,30 @@
   >
     <div class="matrix-card-header">
       <div class="matrix-name">{{ matrix.name }}</div>
+      
+    </div>
+    <div class="matrix-card-body"> 
+      <div class="matrix-card-content">
+
+          <div class="matrix-info-item" @click="showDetailDialog('personConfig', '矩阵人设')">
+            <div class="info-label">
+            矩阵人设
+          </div>
+          <div class="info-value">{{ matrix.personConfig }}</div>
+        </div>
+        <div class="matrix-info-item" @click="showDetailDialog('contentStyle', '文案风格')">
+          <div class="info-label">
+            文案风格
+          </div>
+          <div class="info-value">{{ matrix.contentStyle }}</div>
+        </div>
+        <div class="matrix-info-item" @click="showDetailDialog('specialRequests', '特殊要求')">
+          <div class="info-label">
+            特殊要求
+          </div>
+          <div class="info-value">{{ matrix.specialRequests || '无' }}</div>
+        </div>
+      </div>
       <div class="matrix-actions">
         <el-button 
           type="primary" 
@@ -19,26 +43,6 @@
           size="default"
           @click.stop="handleDelete"
         >删除</el-button>
-      </div>
-    </div>
-    <div class="matrix-card-content">
-      <div class="matrix-info-item" @click="showDetailDialog('personConfig', '矩阵人设')">
-        <div class="info-label">
-          矩阵人设
-        </div>
-        <div class="info-value">{{ matrix.personConfig }}</div>
-      </div>
-      <div class="matrix-info-item" @click="showDetailDialog('contentStyle', '文案风格')">
-        <div class="info-label">
-          文案风格
-        </div>
-        <div class="info-value">{{ matrix.contentStyle }}</div>
-      </div>
-      <div class="matrix-info-item" @click="showDetailDialog('specialRequests', '特殊要求')">
-        <div class="info-label">
-          特殊要求
-        </div>
-        <div class="info-value">{{ matrix.specialRequests || '无' }}</div>
       </div>
     </div>
     <div class="matrix-card-footer">
@@ -129,8 +133,8 @@ const formatDate = (dateString) => {
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  height: 80vh;
-  max-height: 750px;
+  height: 70vh;
+  max-height: 700px;
 }
 
 .matrix-card:hover {
@@ -153,18 +157,32 @@ const formatDate = (dateString) => {
   margin-left: 7px;
 }
 
+.matrix-card-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex: 1;
+}
+
 .matrix-actions {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  max-width: 300px;
+  flex: 1;
+}
+
+.matrix-actions button {  
+  margin: 5px 10px;
+  height: 8%;
+  font-size: 16px;
 }
 
 .matrix-card-content {
   padding: 5px 10px;
-  flex: 1;
+  flex: 8;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  max-height: 80%;
+  justify-content: space-between; 
 }
 
 .matrix-card-content>div{

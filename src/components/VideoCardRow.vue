@@ -171,7 +171,7 @@
                 <div class="script-input-footer">
                 <el-button type="success" size="small" @click="fullScreenEdit">全屏编辑</el-button>
                 <el-button type="primary" size="small" :loading="saveLoading" @click="saveScript">
-                  {{ isMyCopyPage ? '保存' : '保存到我的文案' }}
+                  {{ isMyCopyPage ? '保存' : '保存到我的收藏' }}
                 </el-button>
                 <el-button type="default" size="small" @click="closeConvinientInput">关闭</el-button>
                 </div>
@@ -188,10 +188,10 @@
           收藏文案
         </el-button>
 
-        <!-- <el-button type="primary" size="default" v-if="isMyCopyPage" style="margin: 0;" @click="handleSmartRewrite">
+        <el-button type="primary" size="default" v-if="isMyCopyPage" style="margin: 0;" @click="handleSmartRewrite">
           <svg t="1748488211415" style="margin-right: 5px;" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6849" width="18" height="18" data-spm-anchor-id="a313x.search_index.0.i21.87373a81uFcv8p"><path d="M874.172632 0C942.026105 0 997.052632 40.582737 997.052632 90.543158v533.773474c0 43.385263-41.660632 79.764211-97.010527 88.495157v-189.170526C900.042105 473.195789 848.303158 431.157895 786.216421 431.157895H237.783579C175.696842 431.157895 123.957895 473.195789 123.957895 523.641263v189.170526C68.500211 704.026947 26.947368 667.648 26.947368 624.316632V87.201684C26.947368 39.127579 80.033684 0 145.246316 0zM563.954526 263.599158H239.669895c-23.228632 0-42.091789 13.042526-42.09179 29.103158 0 16.006737 18.863158 29.049263 42.09179 29.049263h324.284631c23.228632 0 42.091789-13.042526 42.037895-29.103158 0-16.006737-18.863158-29.049263-42.037895-29.049263zM668.564211 91.621053H237.136842c-21.881263 0-39.558737 12.988632-39.558737 29.103158 0 16.006737 17.677474 28.995368 39.558737 28.995368h431.427369c21.881263 0 39.558737-12.988632 39.558736-29.049263 0-16.060632-17.677474-29.049263-39.558736-29.049263z" p-id="6850" fill="#fbe5bd" data-spm-anchor-id="a313x.search_index.0.i11.87373a81uFcv8p" class=""></path><path d="M751.939368 485.052632c54.325895 0 99.597474 35.570526 99.597474 78.255157v377.047579c0 42.684632-45.271579 78.255158-99.597474 78.255158H272.060632c-56.158316 0-99.597474-35.570526-99.597474-78.255158v-377.047579C172.463158 520.623158 217.734737 485.052632 272.060632 485.052632z m-262.144 107.789473H426.415158L296.421053 916.210526h59.553684l30.935579-81.057684H529.246316L560.235789 916.210526H619.789474l-129.994106-323.368421zM727.578947 592.842105h-53.894736v323.368421h53.894736v-323.368421z m-268.288 53.894737L512 808.421053H404.210526l53.194106-161.684211h1.886315z" p-id="6851" fill="#f3f3f3" data-spm-anchor-id="a313x.search_index.0.i10.87373a81uFcv8p" class="selected"></path></svg>
           智能改写
-        </el-button> -->
+        </el-button>
 
         <el-button type="success" size="default" v-if="isMyCopyPage" style="margin: 0;" @click="showScriptCompare">
           <svg t="1747358039462" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4628" width="15" height="15" style="margin-right: 5px;">
@@ -1062,9 +1062,8 @@ onUnmounted(() => {
 }
 
 .script-input-wrapper {
-  max-height: 230px;
+  /* max-height: 230px; */
   width: 100%;
-  height: 180px;
   border: none;
   outline: none;
   display: flex;
@@ -1080,7 +1079,7 @@ onUnmounted(() => {
 }
 
 .script-input-footer {
-  padding: 10px 15px;
+  padding: 5px 15px;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;

@@ -1,7 +1,7 @@
 <!-- FavoritesList.vue -->
 <template>
   <div class="video-list">
-    <h2 class="page-title">我的文案</h2>
+    <h2 class="page-title">我的收藏</h2>
     
     <!-- 视频列表 -->
     <div v-loading="loading" class="video-list-container">

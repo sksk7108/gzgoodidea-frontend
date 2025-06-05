@@ -151,8 +151,8 @@ import { getRememberCompanyId } from '@/utils/auth'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { companyConfig } from '@/config/company-config'
-import MenuWy1001 from '@/components/header/Menu-wy1001.vue'
-import MenuWy1002 from '@/components/header/Menu-wy1002.vue'
+import MenuVT from '@/components/menu/MenuVT.vue'
+import MenuWy1002 from '@/components/menu/Menu-wy1002.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -187,12 +187,12 @@ const currentCompanyConfig = computed(() => {
 
 // 根据公司配置动态选择菜单组件
 const menuComponent = computed(() => {
-  const componentName = currentCompanyConfig.value.menuComponent || 'MenuWy1001'
+  const componentName = currentCompanyConfig.value.menuComponent || 'MenuVT'
   const components = {
-    'MenuWy1001': MenuWy1001,
+    'MenuVT': MenuVT,
     'MenuWy1002': MenuWy1002
   }
-  return components[componentName] || MenuWy1001
+  return components[componentName] || MenuVT
 })
 
 // 个人资料表单
@@ -376,7 +376,6 @@ const confirmCrop = () => {
 const submitProfile = async () => {
   if (!profileFormRef.value) return
   await profileFormRef.value.validate(async (valid) => {
-    console.log('valid', valid)
     if (!valid) return
     
     profileSubmitting.value = true
@@ -454,6 +453,7 @@ const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    'lock-scroll': false,
     type: 'warning',
   }).then(async () => {
     try {
@@ -586,7 +586,8 @@ const handleLogout = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 100px;
+  display: inline-block;
 }
 
 .dropdown-icon {
@@ -670,7 +671,6 @@ const handleLogout = () => {
 }
 
 @media screen and (max-width: 1600px) {
-  
 }
 
 @media screen and (max-width: 1200px) {

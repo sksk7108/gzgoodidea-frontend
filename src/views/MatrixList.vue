@@ -3,7 +3,7 @@
     <div class="header-section">
       <div class="title-section">
         <h2>矩阵管理</h2>
-        <span class="subtitle">管理您的矩阵配置，包括人设、文案风格和特殊要求</span>
+        <!-- <span class="subtitle">管理您的矩阵配置，包括矩阵人设、文案风格和特殊要求</span> -->
       </div>
       <el-button 
         type="primary" 
@@ -65,11 +65,11 @@
         <el-form-item class="matrix-name" label="矩阵名称" prop="name">
           <el-input v-model="matrixForm.name" placeholder="请输入矩阵名称" @keyup.enter.stop="submitForm" />
         </el-form-item>
-        <el-form-item label="人设" prop="personConfig">
+        <el-form-item label="矩阵人设" prop="personConfig">
           <el-input
             v-model="matrixForm.personConfig"
             type="textarea"
-            placeholder="请描述矩阵的人设特点"
+            placeholder="请描述矩阵人设特点"
           />
         </el-form-item>
         <el-form-item label="文案风格" prop="contentStyle">
@@ -140,7 +140,7 @@ const formRules = {
     { max: 50, message: '名称长度不能超过50个字符', trigger: 'blur' }
   ],
   personConfig: [
-    { required: true, message: '请输入人设描述', trigger: 'blur' }
+    { required: true, message: '请输入矩阵人设描述', trigger: 'blur' }
   ],
   contentStyle: [
     { required: true, message: '请输入文案风格', trigger: 'blur' }

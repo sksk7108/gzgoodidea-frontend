@@ -1,6 +1,16 @@
 <!-- Login.vue -->
 <template>
   <div class="login-container">
+    <!-- 背景视频 -->
+<!--    <div class="video-background">
+      <video
+              src="@/assets/video/bg1.mp4"
+              autoplay
+              loop
+              muted
+              @error="handleVideoErr"
+      ></video>
+    </div>-->
     <div class="login-card">
       <div class="logo-container">
        <img :src="config.logo" class="logo-img">
@@ -76,6 +86,11 @@ const loginRules = {
   ]
 }
 
+// 处理背景视频加载错误
+const handleVideoErr = () => {
+
+}
+
 // 载入记住的用户名和密码
 onMounted(() => {
   const rememberedLogin = userStore.getRememberedLogin()
@@ -123,26 +138,40 @@ const handleLogin = async () => {
 
 <style scoped>
 .login-container {
+  --login-panel-font-color: #38c9ce;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   min-width: 100vw;
-  background-color: #f5f7fa;
-  background: linear-gradient(0deg, rgba(164, 116, 81, 1.000) 0.000%, rgba(156, 152, 129, 1.000) 16.667%, rgba(115, 160, 157, 1.000) 33.333%,
+  background-color: rgba(59, 137, 154, 1.000);
+  background-image: url("@/assets/img/bg1.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+ /* background: linear-gradient(0deg, rgba(164, 116, 81, 1.000) 0.000%, rgba(156, 152, 129, 1.000) 16.667%, rgba(115, 160, 157, 1.000) 33.333%,
   rgba(59, 137, 154, 1.000) 50.000%, rgba(9, 91, 121, 1.000) 66.667%, rgba(0, 40, 71, 1.000) 83.333%, rgb(1, 3, 59) 100.000%)
-  }
+*/  }
 
-  .login-form {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    padding: 0 40px;
-    text-align: center;
-    z-index: 1;
-    /* background: inherit; */
-    border-radius: 18px;
-    overflow: hidden;
+/*.video-background{*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  z-index: 0;*/
+/*}*/
+
+.login-form {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  z-index: 1;
+  /* background: inherit; */
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 .login-card::before {
@@ -162,29 +191,30 @@ const handleLogin = async () => {
 
 .login-form h2 {
     font-size: 18px;
-    font-weight: 400;
-    color: #344d3e;
+    font-weight: 550;
+    color: var(--login-panel-font-color);
 }
 
 .login-form input,
 .login-form button {
     margin: 6px 0;
+    font-size: 15px;
     height: 46px;
     background-color: rgba(255, 255, 255, .2);
-    border: none;
+    border: 1px solid #ffffff00;
     border-radius: 4px;
     padding: 0 14px;
-    color: #3d5245;
+    color: var(--login-panel-font-color);
 }
 
 .login-form input:focus,
 .login-form button:focus {
     outline: none;
-    border: 1px solid #3d5245;
+    border: 1px solid #8fbbad;
 }
 
 .login-form input::placeholder {
-    color: #3d5245;
+    color: #8fbbad;
 }
 
 .remember-me {
@@ -209,7 +239,7 @@ const handleLogin = async () => {
 }
 
 .remember-me input[type="checkbox"]:checked + .custom-checkbox {
-  background-color: #667683;
+  background-color: #79add1;
   border-color: #515e69;
 }
 
@@ -228,14 +258,14 @@ const handleLogin = async () => {
 
 .remember-me label {
   font-size: 14px;
-  color: #3d5245;
+  color: var(--login-panel-font-color);
   cursor: pointer;
 }
 
 .login-form button {
     position: relative;
     margin-top: 22px;
-    background-color: rgba(57, 88, 69, .4);
+    background-color: rgba(93, 128, 137, .4);
     color: #ffffff;
     overflow: hidden;
     cursor: pointer;
@@ -248,7 +278,7 @@ const handleLogin = async () => {
 }
 
 .login-form button:hover:not(:disabled) {
-    background-color: rgba(12, 88, 38, 0.67);
+    background-color: rgba(27, 130, 134, 0.67);
 }
 
 .login-form button::before,
@@ -257,7 +287,7 @@ const handleLogin = async () => {
     display: block;
     width: 80px;
     height: 100%;
-    background-color: rgba(179, 255, 210, .5);
+    background-color: rgba(179, 255, 241, 0.5);
     opacity: 0.5;
     position: absolute;
     left: 0;
@@ -270,7 +300,7 @@ const handleLogin = async () => {
 
 .login-form button::after {
     width: 40px;
-    background-color: rgba(179, 255, 210, .3);
+    background-color: rgba(179, 255, 232, 0.3);
     left: 60px;
     filter: blur(5px);
     opacity: 0;
@@ -292,11 +322,11 @@ const handleLogin = async () => {
 
 /* ----------------- */
 .login-card {
-  width: 400px;
+  width: 420px;
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 20px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(5px);
 }
 
 .logo-container {
@@ -307,8 +337,8 @@ const handleLogin = async () => {
 }
 
 .logo-img {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   margin-right: 10px;
 }
 
