@@ -68,7 +68,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getPrompt, savePrompt, getKnowledge, saveKnowledge } from '@/api/aiConfig'
+import { getPrompt, savePrompt, getKnowledge, saveKnowledge } from '@/api/aiConfig.js'
 // 当前激活的配置类型
 const activeConfig = ref('prompt')
 

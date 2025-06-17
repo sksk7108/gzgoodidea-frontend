@@ -110,7 +110,7 @@ import {
   createMatrix, 
   updateMatrix, 
   deleteMatrix
-} from '@/api/matrix'
+} from '@/api/matrix.js'
 
 // 状态变量
 const loading = ref(false)

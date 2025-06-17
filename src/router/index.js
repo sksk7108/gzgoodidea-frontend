@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import MainLayout from '@/components/Layout/MainLayout.vue'
-import Login from '@/views/Login.vue'
+import Login from '@/views/commen/Login.vue'
 import { getToken, getRememberCompanyId } from '@/utils/auth'
-import { companyConfig } from '@/config/company-config'
+import { patternConfig } from '@/config/patternConfig.js'
 
 const routes = [
   {
@@ -28,50 +28,56 @@ const routes = [
         path: '',
         redirect: to => {
           // 默认重定向到当前公司ID的首页
-          // return { path: `${companyConfig[getRememberCompanyId()].indexPath}` }
-          return { path: `${companyConfig[getRememberCompanyId()]? companyConfig[getRememberCompanyId()].indexPath : '/login'}` }
+          // return { path: `${patternConfig[getRememberCompanyId()].indexPath}` }
+          return { path: `${patternConfig[getRememberCompanyId()]? patternConfig[getRememberCompanyId()].indexPath : '/login'}` }
         }
       },
       {
         path: 'index',
         name: 'CompanyIndex',
-        component: () => import('@/views/VideoList.vue'),
+        component: () => import('@/views/vt/VideoList.vue'),
         meta: {title: '视频列表'}
       },
       {
         path: 'favorites',
         name: 'CompanyFavorites',
-        component: () => import('@/views/FavoritesList.vue'),
+        component: () => import('@/views/vt/FavoritesList.vue'),
         meta: {title: '我的收藏'}
       },
       {
         path: 'copywriting',
         name: 'CompanyCopywriting',
-        component: () => import('@/views/AiCopywritingList.vue'),
+        component: () => import('@/views/vt/AiCopywritingList.vue'),
         meta: {title: '智能文案'}
       },
       {
         path: 'keywords',
         name: 'CompanyKeywords',
-        component: () => import('@/views/KeywordList.vue'),
+        component: () => import('@/views/vt/KeywordList.vue'),
         meta: {title: '我的关键词'}
       },
       {
         path: 'benchmark-accounts',
         name: 'BenchmarkAccounts',
-        component: () => import('@/views/BenchmarkAccounts.vue'),
+        component: () => import('@/views/vt/BenchmarkAccounts.vue'),
         meta: {title: '对标账号'}
+      },
+      {
+        path: 'bm-accounts-video',
+        name: 'BenchmarkAccountsVideoList',
+        component: () => import('@/views/vt/BenchmarkAccountsVideoList.vue'),
+        meta: {title: '对标账号视频'}
       },
       {
         path: 'matrix',
         name: 'CompanyMatrix',
-        component: () => import('@/views/MatrixList.vue'),
+        component: () => import('@/views/vt/MatrixList.vue'),
         meta: {title: '矩阵管理'}
       },
       {
         path: 'ai-config',
         name: 'CompanyAIConfig',
-        component: () => import('@/views/AIConfig.vue'),
+        component: () => import('@/views/vt/AIConfig.vue'),
         meta: {
           hidden: true // 标记为隐藏，不在导航菜单中显示
         }
@@ -81,7 +87,7 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('../views/404.vue')
+    component: () => import('../views/commen/404.vue')
   }
 ]
 
@@ -94,7 +100,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title =to.meta.title? `爆米热点 - ${to.meta.title}`:'爆米热点'
   // 检查公司ID是否有效
-  if (to.params.loginCompanyId && !companyConfig[to.params.loginCompanyId]) {
+  if (to.params.loginCompanyId && !patternConfig[to.params.loginCompanyId]) {
     // 如果公司ID无效，重定向到默认公司
     next({ path: '/login/VT-10002' })
     return
@@ -109,7 +115,7 @@ router.beforeEach((to, from, next) => {
   } else if (to.path.startsWith('/login')) {
     next()
   } else {
-    if (companyConfig[getRememberCompanyId()].permittedPaths.includes(to.path)) {
+    if (patternConfig[getRememberCompanyId()].permittedPaths.includes(to.path)) {
       next()
     } else {
       next({path: '/404'})

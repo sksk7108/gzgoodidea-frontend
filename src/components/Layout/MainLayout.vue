@@ -150,7 +150,7 @@ import { updateUserProfile, updatePassword } from '@/api/auth'
 import { getRememberCompanyId } from '@/utils/auth'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
-import { companyConfig } from '@/config/company-config'
+import { patternConfig } from '@/config/patternConfig.js'
 import MenuVT from '@/components/menu/MenuVT.vue'
 import MenuWy1002 from '@/components/menu/Menu-wy1002.vue'
 
@@ -182,7 +182,7 @@ const coordinates = ref(null)
 // 公司配置
 const currentCompanyConfig = computed(() => {
   const companyId = userStore.companyId || 'VT-10002'
-  return companyConfig[companyId] || companyConfig['VT-10002']
+  return patternConfig[companyId] || patternConfig['VT-10002']
 })
 
 // 根据公司配置动态选择菜单组件

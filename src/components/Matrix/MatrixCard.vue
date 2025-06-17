@@ -45,9 +45,9 @@
         >删除</el-button>
       </div>
     </div>
-    <div class="matrix-card-footer">
-      <span class="created-time">创建时间: {{ formatDate(matrix.createTime) }}</span>
-    </div>
+<!--    <div class="matrix-card-footer">-->
+<!--      <span class="created-time">创建时间: {{ formatDate(matrix.createTime) }}</span>-->
+<!--    </div>-->
   </el-card>
 
   <!-- 内容详情弹窗 -->
@@ -133,8 +133,9 @@ const formatDate = (dateString) => {
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  height: 70vh;
-  max-height: 700px;
+  height: 36vh;
+  min-height: 300px;
+  max-height: 400px;
 }
 
 .matrix-card:hover {
@@ -173,7 +174,7 @@ const formatDate = (dateString) => {
 
 .matrix-actions button {  
   margin: 5px 10px;
-  height: 8%;
+  height: 30px;
   font-size: 16px;
 }
 
@@ -181,7 +182,8 @@ const formatDate = (dateString) => {
   padding: 5px 10px;
   flex: 8;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  gap: 15px;
   justify-content: space-between; 
 }
 

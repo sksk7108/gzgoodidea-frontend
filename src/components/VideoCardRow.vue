@@ -4,12 +4,23 @@
     <div class="row-layout">
       <!-- 视频预览区域 -->
       <div class="video-preview" ref="videoPlayerRef">
-        <template v-if="!video.videoUrl">
+        <template v-if="video.outDate === '1'">
+          <div class="video-placeholder expired-placeholder">
+            <div class="expired-text">视频已过期</div>
+            <div v-if="video.hotSource === '抖音'" style="margin-top: 10px;" class="videolink">
+              <a @click.stop="handleDouyinLinkClick" v-if="video.hotSource != '视频号'" target="_blank" class="original-link">
+                <img src="@/assets/img/svg/link_icon.svg" alt="">
+                <span>去往抖音查看原视频</span>
+              </a>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="!video.videoUrl">
           <div class="video-placeholder">
             <div class="placeholder-text">暂无视频</div>
           </div>
         </template>
-        <template v-else-if="!video.originalVideo || video.hotSource === '抖音'" >
+        <template v-else-if="!video.originalVideo" >
           <div class="video-placeholder douyin-placeholder">
             <div class="douyin-link-container">
               <svg class="douyin-icon" viewBox="0 0 1024 1024" width="40" height="40">
@@ -32,11 +43,7 @@
         <template v-else>
           <div v-if="!shouldLoadVideo" class="video-placeholder lazy-load-placeholder" @click="shouldLoadVideo = true">
             <div class="lazy-load-container">
-              <svg t="1747032341381" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12951" width="48" height="48">
-                <path d="M239.056896 261.30432 120.561664 261.30432c-27.394048 0-49.60256 22.208512-49.60256 49.60256L70.959104 738.03776c0 27.396096 22.208512 49.60256 49.60256 49.60256l118.495232 0L239.056896 261.30432z" fill="#e6e6e6" p-id="12952"></path>
-                <path d="M249.296896 261.30432l0 526.336L751.616 787.64032l0-526.336L249.296896 261.30432zM425.263104 643.508224l0.210944-238.073856 150.962176 119.216128L425.263104 643.508224z" fill="#e6e6e6" p-id="12953"></path>
-                <path d="M761.856 261.30432l118.493184 0c27.396096 0 49.604608 22.208512 49.604608 49.60256L929.953792 738.03776c0 27.396096-22.208512 49.60256-49.604608 49.60256L761.856 787.64032 761.856 261.30432z" fill="#e6e6e6" p-id="12954"></path>
-              </svg>
+              <img src="@/assets/img/svg/video_play.svg" alt="">
               <div class="lazy-load-text">
                 <span>点击加载视频</span>
               </div>
@@ -284,6 +291,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, inject, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Loading } from '@element-plus/icons-vue'
 import { toggleVideoFavorite, addVideoCopywriting, updateVideoCopywriting } from '@/api/video'
 
 // 定义props
@@ -328,11 +336,8 @@ const currentlyPlaying = inject('currentlyPlaying', { videoId: null })
 // 视频URL和MIME类型处理
 const videoUrl = computed(() => {
   if (!props.video.originalVideo || !shouldLoadVideo.value) return ''
-  if (props.video.hotSource === '抖音') {
-    return props.video.videoUrl
-  } else {
-    return `/api/videos/file/${props.video.originalVideo}`
-  }
+  return `/api/videos/file/${props.video.originalVideo}`
+
 })
 
 // 获取视频MIME类型
@@ -399,7 +404,6 @@ const handleVisibilityChange = (entries) => {
 
   // 如果视频进入可视区域且还未加载，则开始加载
   if (isVideoVisible.value && !shouldLoadVideo.value) {
-    console.log('视频进入可视区域，开始加载:', props.video.title)
     // 可以设置一个短暂延迟，避免快速滚动时加载太多视频
     setTimeout(() => {
       if (isVideoVisible.value) { // 再次检查是否仍然可见
@@ -450,7 +454,7 @@ const handleVideoError = (e) => {
 const handleNetworkChange = () => {
   isOffline.value = !navigator.onLine
   if (isOffline.value) {
-    console.warn('网络已断开')
+    console.warn('网络已断开')  
     if (videoRef.value && !videoLoaded.value) {
       videoError.value = true
       errorMessage.value = '网络已断开'
@@ -1180,6 +1184,7 @@ onUnmounted(() => {
   border-radius: 12px;
   font-size: 12px;
   min-width: 80px;
+  cursor: pointer;
 }
 
 .error-text {
@@ -1300,5 +1305,15 @@ onUnmounted(() => {
 .lazy-load-text {
   color: white;
   font-size: 14px;
+}
+
+.expired-placeholder {
+  background: linear-gradient(135deg, #8ac4e2 0%, #e3eed9 100%);
+}
+
+.expired-text {
+  color: #599486;
+  font-size: 18px;
+  font-weight: 600;
 }
 </style> 

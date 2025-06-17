@@ -1,7 +1,7 @@
 <template>
-    <img src="@/assets/img/logo.png" class="logo-img">
-    <div class="logo">
-        {{ companyConfig?.name || '爆米热点' }}</div>
+    <img :src="props.companyConfig.logo" class="logo-img">
+    <div class="logo" :style="{fontSize: props.companyConfig?.name?.length<8 ? '20px' : '18px'}">
+        {{ props.companyConfig?.name || '爆米热点' }}</div>
     <el-menu
         mode="horizontal"
         :router="true"
@@ -9,14 +9,7 @@
         :default-active="activeMenu"
         class="menu"
     >
-        <el-menu-item :index="`/keywords`">我的关键词</el-menu-item>
-        <el-menu-item :index="`/index`">视频列表</el-menu-item>
-        <el-menu-item :index="`/favorites`">我的收藏</el-menu-item>
-        <el-menu-item :index="`/benchmark-accounts`">对标账号</el-menu-item>
-        <el-menu-item :index="`/matrix`">矩阵管理</el-menu-item>
-        <!-- <el-menu-item :index="`/copywriting`">智能文案</el-menu-item> -->
-        <!-- 隐藏AI话术配置 -->
-        <!-- <el-menu-item :index="`/ai-config`">AI话术配置</el-menu-item> -->
+        <el-menu-item v-for="item in props.companyConfig.menu" :index="item.path">{{ item.name }}</el-menu-item>
     </el-menu>
 </template>
 
@@ -56,8 +49,17 @@ const activeMenu = computed(() => route.path)
 .logo-img {
   width: 30px;
   height: 30px;
-  margin-right: 3px;
+  margin-right: 6px;
 }
+
+@media screen and (max-width: 1100px) {
+
+  .menu{
+    max-width: 600px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
 
 @media screen and (max-width: 900px) {
   .logo {

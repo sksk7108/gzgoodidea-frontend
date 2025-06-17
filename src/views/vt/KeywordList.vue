@@ -3,7 +3,7 @@
     <!-- 操作栏 -->
     <div class="operation-bar">
       <el-button type="primary" @click="openAddDialog">
-        <img src="@/assets/img/add.svg" style="width: 16px; height: 16px; margin-right: 5px;" />新增关键词
+        <img src="../../assets/img/add.svg" style="width: 16px; height: 16px; margin-right: 5px;" />新增关键词
       </el-button>
       
       <!-- <div class="search-box">
@@ -141,7 +141,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 // import { Plus } from '@element-plus/icons-vue'
-import { getKeywordList, addKeyword, deleteKeyword, updateKeyword, getKeywordGroupsList } from '@/api/keyword'
+import { getKeywordList, addKeyword, deleteKeyword, updateKeyword, getKeywordGroupsList } from '@/api/keyword.js'
 
 // 搜索关键词
 const searchKeyword = ref('')

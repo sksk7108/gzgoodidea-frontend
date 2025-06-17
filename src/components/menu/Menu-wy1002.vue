@@ -1,7 +1,7 @@
 <template>
     <img :src="companyConfig.logo || '@/assets/img/logo/logo-1002.png'" class="logo-img">
     <div class="logo">
-        {{ companyConfig.name || '建材' }}
+        {{ patternConfig.name || '建材' }}
     </div>
     <el-menu
         mode="horizontal"

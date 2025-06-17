@@ -219,8 +219,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch, inject, nextTick } from 'vue'
-// import { Loading, VideoPlay, Connection, RefreshRight } from '@element-plus/icons-vue'
+import { ref, computed, onMounted, onUnmounted, inject, nextTick } from 'vue'
+import { Loading } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { toggleVideoFavorite, saveVideoInfo } from '@/api/video'
 

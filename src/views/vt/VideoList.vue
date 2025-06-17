@@ -12,7 +12,7 @@
       <div class="tag-search">
         <el-input
           v-model="tagSearchKeyword"
-          placeholder="搜索关键字"
+          placeholder="搜索关键词"
           clearable
           @input="filterTags"
           prefix-icon="el-icon-search"
@@ -43,7 +43,7 @@
         <el-button type="text" @click="toggleTagExpand">
           {{ isTagExpanded ? '收起' : '展开更多' }}
           <el-icon>
-            <component :is="isTagExpanded ? 'ArrowUp' : 'ArrowDown'" />
+            <component :is="isTagExpanded ? ArrowUp : ArrowDown" />
           </el-icon>
         </el-button>
       </div>
@@ -118,6 +118,22 @@
           </div>
         </div>
       </div>
+
+      <!-- 视频时长筛选 -->
+       <div class="duration-filter">
+        <div class="source-label">视频时长：</div>
+        <div class="duration-items">
+          <div
+            v-for="durationOption in durationOptions"
+            :key="durationOption.value"
+            class="duration-item"
+            :class="{ 'active': filterForm.minDuration+'-'+filterForm.maxDuration === durationOption.value }"
+            @click="selectDuration(durationOption.value)"
+          >
+            <span>{{ durationOption.label }}</span>
+          </div>
+        </div>
+      </div>
     </el-card>
 
     <!-- 视频列表 -->
@@ -152,9 +168,9 @@
 <script setup>
 import { ref, reactive, onMounted, computed, provide, nextTick } from 'vue'
 import VideoCardRow from '@/components/VideoCardRow.vue'
-import { getVideoList, auditVideoStatus, deleteVideo } from '@/api/video'
+import { getVideoList, auditVideoStatus, deleteVideo } from '@/api/video.js'
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { getKeywordList, getKeywordGroupsList } from '@/api/keyword'
+import { getKeywordList, getKeywordGroupsList } from '@/api/keyword.js'
 import { Search, ArrowUp, ArrowDown } from '@element-plus/icons-vue'
 
 // 提供全局视频播放状态
@@ -179,7 +195,9 @@ const filterForm = reactive({
   source: '',
   sortBy: '',
   sortOrder: 'desc', // 默认降序排序
-  timeRange: '' // 时间范围筛选
+  timeRange: '', // 时间范围筛选
+  minDuration: '', // 最小时长
+  maxDuration: '' // 最大时长
 })
 
 // 标签选项
@@ -231,6 +249,32 @@ const timeOptions = [
     label: '半年内',
     value: '180',
   }
+]
+
+// 视频时长选项
+const durationOptions = [
+  {
+    label: '全部时长',
+    value: '-'
+  },
+  {
+    label: '1分钟以内',
+    value: '30-60'
+  },
+  {
+    label: '1-3分钟',
+    value: '60-180'
+  },
+  {
+    label: '3-5分钟',
+    value: '180-300'
+  },
+  {
+    label: '5分钟以上',
+    value: '300-'
+  }
+  
+  
 ]
 
 // 排序选项
@@ -300,8 +344,12 @@ const fetchVideoList = async () => {
       hotSource: filterForm.source,
       sortBy: filterForm.sortBy, // 排序字段
       sortOrder: filterForm.sortOrder, // 排序顺序
-      timeRange: filterForm.timeRange // 时间范围筛选
+      timeRange: filterForm.timeRange, // 时间范围筛选
     }
+
+    if(filterForm.minDuration) params.minDuration = Number(filterForm.minDuration)
+    if(filterForm.maxDuration) params.maxDuration = Number(filterForm.maxDuration)
+
     
     console.log('请求参数:', params)
     
@@ -432,6 +480,13 @@ const selectSortOption = (sortValue) => {
   fetchVideoList()
 }
 
+// 选择视频时长
+const selectDuration = (durationValue) => {
+  [ filterForm.minDuration,filterForm.maxDuration ] = durationValue.split('-')
+  currentPage.value = 1
+  fetchVideoList()
+}
+
 // 重置筛选
 const resetFilter = () => {
   selectedTags.value = []
@@ -440,6 +495,8 @@ const resetFilter = () => {
   filterForm.timeRange = ''
   filterForm.sortBy = 'createTime'
   filterForm.sortOrder = 'desc'
+  filterForm.minDuration = ''
+  filterForm.maxDuration = ''
   isTagExpanded.value = false
   currentPage.value = 1
   fetchVideoList()
@@ -565,10 +622,10 @@ const handleDelete = (video) => {
   margin-right: 5px;
 }
 
-.source-filter, .sort-filter, .time-filter {
+.source-filter, .sort-filter, .time-filter, .duration-filter {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .source-label {
@@ -579,13 +636,13 @@ const handleDelete = (video) => {
   min-width: 70px;
 }
 
-.source-items, .sort-items, .time-items {
+.source-items, .sort-items, .time-items, .duration-items {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
 }
 
-.source-item, .sort-item, .time-item {
+.source-item, .sort-item, .time-item, .duration-item {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -597,13 +654,13 @@ const handleDelete = (video) => {
   border: 1px solid #ebeef5;
 }
 
-.source-item:hover, .sort-item:hover, .time-item:hover {
+.source-item:hover, .sort-item:hover, .time-item:hover, .duration-item:hover {
   color: #409EFF;
   background-color: #f0f7ff;
   border-color: #c6e2ff;
 }
 
-.source-item.active, .sort-item.active, .time-item.active {
+.source-item.active, .sort-item.active, .time-item.active, .duration-item.active {
   color: #409EFF;
   background-color: #ecf5ff;
   border-color: #b3d8ff;
@@ -614,6 +671,7 @@ const handleDelete = (video) => {
   height: 16px;
   margin-right: 5px;
 }
+
 
 .video-list-container {
   width: 100%;

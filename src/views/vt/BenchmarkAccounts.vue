@@ -4,7 +4,7 @@
       <h2 class="page-title">对标账号管理</h2>
       <el-button type="primary" @click="handleAddAccount">
         <el-icon><Plus /></el-icon>新增对标账号
-      </el-button>
+      </el-button>  
     </div>
 
     <!-- 数据表格 -->
@@ -16,9 +16,9 @@
       style="width: 100%"
       :header-cell-style="{ background: '#f5f7fa', color: '#606266' }"
     >
-      <el-table-column type="index" label="序号" width="60" align="center" />
-      <el-table-column prop="name" label="账号名称" min-width="150" show-overflow-tooltip />
-      <el-table-column prop="account_id" label="账号ID" min-width="120" show-overflow-tooltip />
+      <el-table-column type="index" label="序号" width="60" fixed="left" align="center" />
+      <el-table-column prop="name" label="账号名称" min-width="100" show-overflow-tooltip />
+      <el-table-column prop="account_id" label="账号ID" min-width="150" show-overflow-tooltip />
       <el-table-column prop="platform" label="所属平台" width="100" align="center">
         <template #default="scope">
           <el-tag :type="scope.row.platform === 0 ? 'danger' : 'primary'">
@@ -105,15 +105,14 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, Refresh, Edit, Delete, Download } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { Plus, Edit, Delete } from '@element-plus/icons-vue'
 import { 
   getBenchmarkAccounts, 
   addBenchmarkAccount, 
   updateBenchmarkAccount, 
   deleteBenchmarkAccount,
-  crawlBenchmarkAccount
-} from '@/api/benchmark-accounts'
+} from '@/api/benchmark-accounts.js'
 
 // 搜索表单
 const searchForm = reactive({
@@ -255,17 +254,6 @@ const handleDelete = async (row) => {
   }
 }
 
-// 爬取账号数据
-const handleCrawl = async (row) => {
-  try {
-    // 调用API触发爬取
-    await crawlBenchmarkAccount(row.id)
-    ElMessage.success(`已开始爬取账号"${row.name}"的数据`)
-  } catch (error) {
-    console.error('触发爬取失败:', error)
-    ElMessage.error('触发爬取失败')
-  }
-}
 
 // 提交表单
 const submitForm = async () => {

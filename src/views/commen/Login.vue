@@ -56,8 +56,8 @@ import { ref, reactive, onMounted } from 'vue'
 // import { User, Lock } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
-import { useUserStore } from '@/stores'
-import { companyConfig } from '@/config/company-config'
+import { useUserStore } from '@/stores/index.js'
+import { patternConfig } from '@/config/patternConfig.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -65,7 +65,7 @@ const userStore = useUserStore()
 const loading = ref(false)
 
 const companyId = ref(route.params.loginCompanyId)
-const config = ref(companyConfig[companyId.value || '1001'])
+const config = ref(patternConfig[companyId.value || '1001'])
 
 // 登录表单
 const loginForm = reactive({

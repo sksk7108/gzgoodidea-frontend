@@ -2,6 +2,7 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { removeToken } from "@/utils/auth.js";
 import { useRouter } from 'vue-router'
+import {getToken} from "@/utils/auth.js";
 
 const router = useRouter()
 
@@ -10,7 +11,8 @@ const service = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 使用环境变量中定义的 API 基础路径
   timeout: 30000, // 请求超时时间 30s
   headers: {
-    'Content-Type': 'application/json;charset=utf-8'
+    'Content-Type': 'application/json;charset=utf-8',
+    'clientId': '428a8310cd442757ae699df5d894f051'
   }
 })
 
@@ -21,7 +23,7 @@ service.interceptors.request.use(
     console.log('完整请求地址:', config.baseURL + config.url)
     
     // 从 localStorage 获取 token
-    const token = localStorage.getItem('token')
+    const token = getToken()
     // 如果有 token，添加到请求头
     if (token) {
       config.headers.Authorization = `Bearer ${token}`

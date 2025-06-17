@@ -36,7 +36,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed, provide, nextTick } from 'vue'
 import VideoCardRow from '@/components/VideoCardRow.vue'
-import { getVideoList, deleteVideo, getCollectedVideos, deleteVideoCopywriting } from '@/api/video'
+import { getVideoList, deleteVideo, getCollectedVideos, deleteVideoCopywriting } from '@/api/video.js'
 import { ElMessageBox, ElMessage } from 'element-plus'
 
 // 提供全局视频播放状态
